@@ -1,3 +1,6 @@
+/*source from Internet whose original author I don't know.
+* just to save here for future using.
+* and thanks the author*/
 #define     HEXLEN      20                /* 十六进制日志字符数 */
 
 struct  HEXBUF
