@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TENDA 11N无线路由器mac设置</title>
+</head>
+<body onload=init()>
+<section align=center>
+<input type="button" value="登录路由器" onClick="login()" align='center' > 
+</section>
+<hr/>
+<table align=center id='userListTable' border=1 cellspacing=0  style="margin-top:5px; line-height:18px; width:55%;">
+<caption>已连接无线连接设备</caption>
+<th aligen=center>序号</th>
+<th aligen=center>设备地址</th>
+<th aligen=center>设备名称</th>
+</table>
+<section align=center>
+<input type='button' value='显示连接设备'  onClick=showUsers() align='center'>
+</section>
+<hr/>
+<table align=center id='macWhiteList' border=1 cellspacing=0  style="margin-top:5px; line-height:18px; width:55%;">
+<caption>MAC白名单</caption>
+</table>
+<section align=center>
+<input type='button' value='设置MAC绑定' id='switch' onClick=ruleSwitch('allow') align='center'>
+<input type='button' value='取消MAC绑定' id='switch' onClick=ruleSwitch('disabled') align='center'>
+</section>
+<pre></pre>
+
+<form name="Login" method="post" target=_blank action="/LoginCheck" >
+<input type="hidden" name="Username" value="admin">
+<input type="hidden" name="checkEn" value="0">
+<input type="hidden" name="Password" value='15398449'>
+</form>
+</body>
+<script>
+var macWhiteList={
+                    ":::::":"红米3s",
+                };
+var macList='';
+for(var mac in macWhiteList){
+    macList=macList+' '+mac;
+}
+//alert(macList.replace(/:/gi,'%3A').replace(/^\+/i,''));
+function init(){
+    showMacList();
+    showUsers();
+}
+
+function PreSummit(f)
+{	
+	f.submit();
+}
+
+function login()
+{   
+
+    var loginForm = document.createElement("form"); 
+    loginForm.id = "loginForm"; 
+    loginForm.name = "loginForm"; 
+    loginForm.method = "POST"; 
+    loginForm.action = "/LoginCheck"; 
+    loginForm.target='_blank';
+    document.body.appendChild(loginForm); 
+
+    var user= document.createElement("input"); 
+    user.type = "hidden"; 
+    user.name = "Username"; 
+    user.value = "admin"; 
+    loginForm.appendChild(user); 
+
+    var password= document.createElement("input"); 
+    password.type = "hidden"; 
+    password.name = "Password"; 
+    password.value = "15398449"; 
+    loginForm.appendChild(password); 
+
+    var checken= document.createElement("input"); 
+    checken.type = "hidden"; 
+    checken.name = "checkEn"; 
+    checken.value = "0"; 
+    loginForm.appendChild(checken); 
+    loginForm.submit(); 
+    document.body.removeChild(loginForm); 
+}
+
+function postData() {
+  // Default options are marked with *
+    var urlEncodedData = ""
+    var urlEncodedDataPairs = [];
+
+    urlEncodedDataPairs.push(encodeURIComponent('Username') + '=' + encodeURIComponent('admin'));
+    urlEncodedDataPairs.push(encodeURIComponent('checkEn') + '=' + encodeURIComponent('1'));
+    urlEncodedDataPairs.push(encodeURIComponent('Password')+'='+encodeURIComponent('15398449'));
+    urlEncodedData = urlEncodedDataPairs.join('&');
+    return fetch('/LoginCheck', {
+        method: 'POST', // *GET, PUT, DELETE, etc.
+        body:urlEncodedData  , // must match 'Content-Type' header
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Upgrade-Insecure-Requests': '1',
+            Cookie:'admin:language=cn'
+        },
+    });
+}
+function login1() {
+    var XHR = new XMLHttpRequest();
+    var urlEncodedData = ""
+    var urlEncodedDataPairs = [];
+
+    urlEncodedDataPairs.push(encodeURIComponent('Username') + '=' + encodeURIComponent('admin'));
+    urlEncodedDataPairs.push(encodeURIComponent('checkEn') + '=' + encodeURIComponent('0'));
+    urlEncodedDataPairs.push(encodeURIComponent('Password')+'='+encodeURIComponent('15398449'));
+    urlEncodedData = urlEncodedDataPairs.join('&');
+  //  alert(urlEncodedData);
+
+    XHR.addEventListener('load', function(event) {
+       // alert(event.target.responseText)
+      //  showUsers();
+    });
+  // Define what happens in case of error
+    XHR.addEventListener('error', function(event) {
+        alert('Oups! Something goes wrong when logging.');
+    });
+
+  // Set up our request
+    XHR.open('POST', '/LoginCheck',true);
+  // Add the required HTTP header for form data POST requests
+    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    XHR.setRequestHeader('Upgrade-Insecure-Requests', '1');
+    XHR.setRequestHeader('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+   // XHR.setRequestHeader('Cookie', 'admin:language=cn');
+/*
+    XHR.onreadystatechange = function () {
+        //if(XHR.readyState === XMLHttpRequest.DONE && XHR.status === 200) {
+        if(XHR.readyState === 302) {
+            alert(XHR.responseText);
+        }
+    };
+*/
+  // Finally, send our data.
+    XHR.send(urlEncodedData);
+
+}
+userShowed=false;
+function showUsers(){
+    //var url="/wireless_filter.asp";
+    var url="/wireless_state.asp";
+    var request = new XMLHttpRequest();
+        request.open('GET', url);
+        request.responseType = 'text';
+
+        request.onload = function() {
+            var res=request.response;
+            var macMode=/(\w{2}:){5}\w{2}/gi;
+            var userList=res.match(macMode);
+            if (userList == null||userShowed)
+                return;
+            userShowed=true; 
+            var userListTable=document.getElementById('userListTable')
+            
+            for (var i=0; i< userList.length;i++){
+                var userContent=document.createElement('tr');
+                var userSeq=document.createElement('td');
+                var userMac=document.createElement('td');
+                var userDevice=document.createElement('td');
+
+                userSeq.textContent=i+1;
+                userMac.textContent=userList[i];
+                userDevice.textContent=macWhiteList[userList[i].toLowerCase()];
+
+                userSeq.align='center';
+                userMac.align='center';
+                userDevice.align='center';
+
+                userContent.appendChild(userSeq);
+                userContent.appendChild(userMac);
+                userContent.appendChild(userDevice);
+                userListTable.appendChild(userContent);
+            }
+        }
+        request.send();
+}
+function showMacList()
+{
+    //var url="/wireless_filter.asp";
+    var macTable=document.getElementById('macWhiteList')
+    var ultHeader=document.createElement('tr');
+    macTable.appendChild(ultHeader);
+
+    var ultTitleSeq=document.createElement('th');
+    ultTitleSeq.textContent='序号';
+    ultTitleSeq.align='center';
+    ultHeader.appendChild(ultTitleSeq);
+
+    var titleMac=document.createElement('th');
+    titleMac.textContent='设备地址';
+    titleMac.align='center';
+    ultHeader.appendChild(titleMac);
+
+    var titleDevice=document.createElement('th');            
+    titleDevice.textContent='设备名称';
+    titleDevice.align='center';
+    ultHeader.appendChild(titleDevice);
+
+    var i=1;
+	for(var macAddr in macWhiteList){
+        var macContent=document.createElement('tr');
+        var macSeq=document.createElement('td');
+        var macMac=document.createElement('td');
+        var macDevice=document.createElement('td');
+
+        macSeq.textContent=i;
+        macMac.textContent=macAddr;
+        macDevice.textContent=macWhiteList[macAddr];
+        macSeq.align='center';
+        macMac.align='center';
+        macDevice.align='center';
+
+        macContent.appendChild(macSeq);
+        macContent.appendChild(macMac);
+        macContent.appendChild(macDevice);
+        macTable.appendChild(macContent);
+        i++;
+    }
+
+}
+function showSource(text){
+    var pre=document.querySelector('pre');
+    pre.textContent=text;
+/*
+    var url="/wireless_filter.asp";
+    //var url="/wireless_filter.asp";
+    var request = new XMLHttpRequest();
+        request.open('GET', url);
+        request.responseType = 'text';
+
+        request.onload = function() {
+            var res=request.response;
+            var pre=document.querySelector('pre');
+            pre.textContent=res;
+        }
+        request.send();
+*/
+}
+function ruleSwitch(filterMode){
+    var XHR = new XMLHttpRequest();
+    var urlEncodedData = ""
+    var urlEncodedDataPairs = [];
+    var statusBox=document.getElementById('status');
+
+    urlEncodedDataPairs.push(encodeURIComponent('GO') + '=' + encodeURIComponent('/wireless_filter.asp'));
+    urlEncodedDataPairs.push(encodeURIComponent('maclist')+'='+encodeURIComponent(macList));
+    urlEncodedDataPairs.push(encodeURIComponent('ssidIndex') + '=' +encodeURIComponent('0'));
+    urlEncodedDataPairs.push(encodeURIComponent('FilterMode') + '=' +encodeURIComponent(filterMode));
+    
+    urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+
+    //alert(urlEncodedData);
+    XHR.addEventListener('load', function(event) {
+       // alert(event.target.responseText.match(/var filter_mode = "\w+";/));  
+        var filter_mode=event.target.responseText.match(/var filter_mode = "\w+";/);
+        //alert(filter_mode[0].match(/"\w+"/));
+        if(filter_mode[0].match(/"\w+"/)=='"allow"'){
+            statusBox.textContent="MAC已绑定";
+        }else if(filter_mode[0].match(/"\w+"/)=='"disabled"'){
+            statusBox.textContent='MAC未绑定';
+        }else{ 
+            statusBox.textContent='更改失败';
+        }
+    });
+
+  // Define what happens in case of error
+    XHR.addEventListener('error', function(event) {
+        alert('Oups! Something goes wrong.');
+    });
+
+  // Set up our request
+    XHR.open('POST', '/goform/WlanMacFilter');
+
+  // Add the required HTTP header for form data POST requests
+    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+  // Finally, send our data.
+    XHR.send(urlEncodedData);
+}
+
+function ruleSwitch0(){
+    var switchButton=document.getElementById('switch')
+    var filter_mode = "allow"; 
+
+    var XHR = new XMLHttpRequest();
+    var FD  = new FormData();
+  // Push our data into our FormData object
+    FD.append('GO', encodeURIComponent('/wireless_filter.asp'));
+    FD.append('maclist',encodeURIComponent(macList).replace(/%20/g,'+').replace(/^\+/,''));
+    FD.append('ssidIndex',encodeURIComponent('0'));
+
+    if(switchButton.value=='允许MAC绑定'){
+        filter_mode = "allow";
+        switchButton.value='取消MAC绑定';
+    }else{
+        filter_mode = "disabled";
+        switchButton.value='允许MAC绑定';
+    }
+    FD.append('FilterMode',encodeURIComponent(filter_mode));
+
+  // Define what happens on successful data submission
+    XHR.addEventListener('load', function(event) {
+       // showUsers();
+    });
+
+  // Define what happens in case of error
+    XHR.addEventListener('error', function(event) {
+        alert('Oups! Something went wrong.');
+    });
+  // Set up our request
+    XHR.open('POST', '/goform/WlanMacFilter');
+    XHR.send(FD);
+}
+</script>
+</html>
