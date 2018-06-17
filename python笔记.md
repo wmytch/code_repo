@@ -1,6 +1,6 @@
 # Python笔记  
   
-### 2.1.1. Argument Passing  
+### [211][2.1.1. Argument Passing]  
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
 输出为:   
 
@@ -11,7 +11,7 @@
 ```  
 可见argv[0]:-c argv[1]:1 argv[2]:2....
 总之从argv[1]开始是传入并且由command或者module或者file处理的参数，而argv[0]则要看具体传递的形式，或者是“-c”本身或者是个文件名等等。    
-### 2.2.1. Source Code Encoding 以及shell脚本  
+### [221][2.2.1. Source Code Encoding 以及shell脚本]  
 `# -*- coding: cp1252 -*-`  
   
 或者
