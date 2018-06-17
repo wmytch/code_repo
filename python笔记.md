@@ -1,6 +1,6 @@
-#Python笔记  
+# Python笔记  
   
-###2.1.1. Argument Passing  
+### 2.1.1. Argument Passing  
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
 输出为:   
 
@@ -11,7 +11,7 @@
 ```  
 可见argv[0]:-c argv[1]:1 argv[2]:2....
 总之从argv[1]开始是传入并且由command或者module或者file处理的参数，而argv[0]则要看具体传递的形式，或者是“-c”本身或者是个文件名等等。    
-###2.2.1. Source Code Encoding 以及shell脚本  
+### 2.2.1. Source Code Encoding 以及shell脚本  
 `# -*- coding: cp1252 -*-`  
   
 或者
@@ -21,7 +21,7 @@
 # -*- coding: cp1252 -*-  
 ```
 第二个例子还说明了用python写shell脚本的方式  
-###3.1.1. Numbers 幂运算  
+### 3.1.1. Numbers 幂运算  
  
 ```python  
 >>> 5 ** 2  # 5 squared
@@ -29,7 +29,7 @@
 >>> 2 ** 7  # 2 to the power of 7
 128  
 ```  
-###3.1.1. Numbers 变量_ 
+### 3.1.1. Numbers 变量_ 
 ```python  
 >>> tax = 12.5 / 100
 >>> price = 100.50
@@ -41,7 +41,7 @@
 113.06  
 ```
 互动模式下，_代表上一条刚打印的表达式，这是个只读变量  
-###3.1.2. Strings escape以及raw string  
+### 3.1.2. Strings escape以及raw string  
 作为参数调用print时escape才起作用  
  
 ```python 
@@ -69,7 +69,7 @@ raw string
 >>> print(r'C:\some\name')  # note the r before the quote
 C:\some\name
 ```  
-###3.1.2. Strings 多行输入以及\的作用  
+### 3.1.2. Strings 多行输入以及\的作用  
 一个string分成多行输入时，\可以取消编辑时输入的换行符  
 
 ```python
@@ -107,7 +107,7 @@ Usage: thingy [OPTIONS]
 ```python
 Usage: thingy [OPTIONS]     -h                        Display this usage message     -H hostname               Hostname to connect to
 ```  
-###3.1.2. Strings index以及slice  
+### 3.1.2. Strings index以及slice  
 ```python
 >>> text='python'
 >>> text[3]
@@ -141,7 +141,7 @@ slice的索引范围是个半开区间，也就是[b,e)这样的区间`text[-2:]
 >>> text[6:]
 ''
 ```
-###3.1.2. Strings 连接  
+### 3.1.2. Strings 连接  
 
 ```python
 >>> 'un'*3
@@ -159,7 +159,7 @@ slice的索引范围是个半开区间，也就是[b,e)这样的区间`text[-2:]
 >>> text
 'python'
 ```  
-###3.1.3. Lists  
+### 3.1.3. Lists  
 list是mutable的，string是immutable的  
 
 ```python
@@ -219,7 +219,7 @@ list是mutable的，string是immutable的
 >>> x[0][1]
 'b'   
 ```  
-###4.2. for Statements  
+### 4.2. for Statements  
 ```python
 >>> for w in words:
 ...     print(w, len(w))
@@ -246,7 +246,7 @@ words[:]是words的一个copy，而不是words本身，所以在words中insert�
 ...             words.insert(0, w)
 ```
 会无限循环下去，不停的在前面插入‘defenestrate'
-###4.3. The range() Function  
+### 4.3. The range() Function  
 ```python
 >>> print(range(10))
 range(0, 10)
@@ -261,7 +261,7 @@ range(0, 10
 >>> list(range(5))
 [0, 1, 2, 3, 4]
 ```
-###4.4. break and continue Statements, and else Clauses on Loops  
+### 4.4. break and continue Statements, and else Clauses on Loops  
 
 ```python
 >>> forn in range(2, 10):
@@ -283,7 +283,7 @@ range(0, 10
 9 equals 3 * 3
 ```
 break和continue与c语言或者其他什么语言的语义是一样的，而这里的else会在内层循环正常迭代结束之后执行，但是break出来之后不会执行else  
-###4.6. Defining Functions None以及函数对象  
+### 4.6. Defining Functions None以及函数对象  
 任何一个函数都会有一个返回值，即使没有return语句，也会返回一个None。  
 函数是一个对象，所以可以  
 
@@ -297,7 +297,7 @@ f(100)
 f100=func(100)
 f100
 ```  
-###4.7.1. Default Argument Values 及in和is None  
+### 4.7.1. Default Argument Values 及in和is None  
 
 ```python
 def ask_ok(prompt,retries=4,reminder='Please try again!'):
