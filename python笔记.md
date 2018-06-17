@@ -1,4 +1,6 @@
 # Python笔记  
+
+[TOC]
   
 ### [2.1.1. Argument Passing](#211)  
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
