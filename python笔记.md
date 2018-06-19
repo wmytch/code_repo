@@ -1,6 +1,6 @@
 # Python笔记  
 
-[TOC]
+
   
 ### [2.1.1. Argument Passing](#211)  
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
@@ -323,7 +323,7 @@ def ask_ok(prompt,retries=4,reminder='Please try again!'):
 
 in用来检查一个序列中是否包含某个值
 
-缺省参数在定义的地方计算  
+缺省参数在函数定义的地方计算，只计算一次，而不是在调用时计算  
 
 ```python
 >>> i=5
@@ -361,3 +361,173 @@ def f(a,L=None):
     return  L  
 ```
 另外还可以看到None是用is来比较，而不是==
+### [4.7.2. Keyword Arguments](#472)  
+keyword实参[^参数]指在调用函数时使用arg=value的形式传入的参数，而在函数定义形式参数列表中arg=value形式的参数arg称为可选参数，value称为缺省值  
+
+~~~python
+def parrot(voltage, state='a stiff', action='voom', type='Norwegian Blue'):
+    print("-- This parrot wouldn't", action, end=' ')
+    print("if you put", voltage, "volts through it.")
+    print("-- Lovely plumage, the", type)
+    print("-- It's", state, "!")  
+~~~  
+这个函数接受一个required实参(voltage),三个可选实参(state,action,type)。keyword参数出现的顺序任意的，毕竟已经提供参数名字了，还要求顺序对程序员来说显得略多余。  
+下面这样调用都是非法的：  
+
+~~~python
+parrot()                     # 缺少参数
+parrot(voltage=5.0, 'dead')  # 在keyword参数之后不允许再出现非keyword参数
+parrot(110, voltage=220)     # voltage重复了
+parrot(actor='John Cleese')  # actor未知参数
+~~~  
+
+[^参数]: 这里用参数还是实参犹豫了一阵子，虽然parameter和argument意义是不同的，前者指函数定义处的参数，也就是形式参数或者形参，后者指函数调用时的参数，也就是实际参数或者实参，不过在不会混淆的情况下还是会使用参数  
+***
+~~~python
+def cheeseshop(kind, *arguments, **keywords):
+    print("-- Do you have any", kind, "?")
+    print("-- I'm sorry, we're all out of", kind)
+    for arg in arguments:
+        print(arg)
+    print("-" * 40)
+    for kw in keywords:
+        print(kw, ":", keywords[kw])
+~~~  
+复习一下`print("-" * 40)`这种字符串生成方式，以及注意一下arguments和keywords在函数中的使用方式。  
+这个函数可以这样调用  
+
+~~~python
+cheeseshop("Limburger", "It's very runny, sir.",
+           "It's really very, VERY runny, sir.",
+           shopkeeper="Michael Palin",
+           client="John Cleese",
+           sketch="Cheese Shop Sketch")  
+~~~  
+`*arguments`是个元组:  
+`("It's very runny, sir.","It's really very, VERY runny, sir.")`
+`**keywords"`则是个字典:  
+`{"shopkeeper":"Michael Palin","client":"John Cleese",      "sketch":"Cheese Shop Sketch"}`  
+***_注意并且理解参数列表中的顺序。_***
+  
+###[4.7.4. Unpacking Argument Lists `*`和`**`](#474)  
+
+~~~python
+>>> list(range(3, 6))            # normal call with separate arguments
+[3, 4, 5]
+>>> args = [3, 6]
+>>> list(range(*args))            # call with arguments unpacked from a list
+[3, 4, 5]  
+~~~
+args是个list,用元组也是可以的，但是args必须加上*号  
+
+~~~python
+>>> def parrot(voltage, state='a stiff', action='voom'):
+...     print("-- This parrot wouldn't", action, end=' ')
+...     print("if you put", voltage, "volts through it.", end=' ')
+...     print("E's", state, "!")
+...
+>>> d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
+>>> parrot(**d)
+-- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !  
+~~~  
+同样的，d也必须加上两个`**`号
+### [4.7.5. Lambda Expressions](#475)  
+
+```python
+>>> def make_incrementor(n):
+...     return lambda x: x + n
+...
+>>> f = make_incrementor(42)
+>>> f(0)
+42
+>>> f(1)
+43
+```  
+第4行生成了一个函数对象**f**:x->x+42[^函数]，接下来第5和第7行是对这个函数**f**的调用，而不是对函数make_incrementor的调用。  
+
+[^函数]: 好吧，这个函数的写法是数学意义上的函数的写法，理解就行  
+
+```python
+>>> pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+>>> pairs.sort(key=lambda pair: pair[1])
+>>> pairs
+[(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]
+```  
+
+lamda表达式作为参数传入了sort函数，需要注意的是必须使用keyword实参的形式传入。  
+**注意**：这里只是说明了在函数的语境中lamda表达式的使用：作为返回值或者参数。  
+不过我们可以看另外一个例子，可能更好理解一些。
+
+```python
+>>> def printPairs(key):
+...     pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+...     for tup in pairs:
+...             print(key(tup))
+
+>>> printPairs(key=lambda pair: pair[1])
+one
+two
+three
+four
+>>> printPairs(key=lambda pair: pair[0])
+1
+2
+3
+4
+```  
+### [4.7.6. Documentation Strings:`__doc__`](#476)  
+
+```python
+>>> def my_function():
+...     """Do nothing, but document it.
+...
+...     No, really, it doesn't do anything.
+...     """
+...     pass
+...
+>>> print(my_function.__doc__)
+Do nothing, but document it.
+
+    No, really, it doesn't do anything.  
+
+>>> def my_function():
+...     """\
+...     Do nothing, but document it.
+...
+...     No, really, it doesn't do anything.
+...     """
+...     pass
+... 
+>>> print(my_function.__doc__)
+	Do nothing, but document it.
+	
+	No, really, it doesn't do anything.
+
+```  
+第一个例子是惯常的函数文档的写法，第二个只是复习一下相关内容。
+
+### [4.7.7. Function Annotations: `__annotations__`](#477)  
+```python
+>>> def f(ham: str, eggs: str = 'eggs') -> str:
+...     print("Annotations:", f.__annotations__)
+...     print("Arguments:", ham, eggs)
+...     return ham + ' and ' + eggs
+...
+>>> f('spam')
+Annotations: {'ham': <class 'str'>, 'return': <class 'str'>, 'eggs': <class 'str'>}
+Arguments: spam eggs
+'spam and eggs'
+
+>>> def f(ham, eggs= 'eggs'):
+...     print("Annotations:", f.__annotations__)
+...     print("Arguments:", ham, eggs)
+...     return ham + ' and ' + eggs
+... 
+>>> f('spam')
+Annotations: {}
+Arguments: spam eggs
+'spam and eggs'
+```
+似乎不需要解释什么了。
+### [4.8. Intermezzo: Coding Style](#48)  
+***`CamelCase` for classes and `lower_case_with_underscores` for functions and methods***
