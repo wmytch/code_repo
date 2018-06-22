@@ -1,8 +1,7 @@
 # Python笔记  
 
-
   
-### [2.1.1. Argument Passing](#211)  
+###  2.1.1. Argument Passing 
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
 输出为:   
 
@@ -13,7 +12,7 @@
 ```  
 可见argv[0]:-c argv[1]:1 argv[2]:2....
 总之从argv[1]开始是传入并且由command或者module或者file处理的参数，而argv[0]则要看具体传递的形式，或者是“-c”本身或者是个文件名等等。    
-### [2.2.1. Source Code Encoding 以及shell脚本](#221)  
+### 2.2.1. Source Code Encoding 以及shell脚本
 `# -*- coding: cp1252 -*-`  
   
 或者
@@ -23,7 +22,7 @@
 # -*- coding: cp1252 -*-  
 ```
 第二个例子还说明了用python写shell脚本的方式  
-### [3.1.1. Numbers 幂运算](#311)  
+### 3.1.1. Numbers 幂运算  
  
 ```python  
 >>> 5 ** 2  # 5 squared
@@ -31,7 +30,7 @@
 >>> 2 ** 7  # 2 to the power of 7
 128  
 ```  
-### [3.1.1. Numbers 变量'_'](#311a) 
+### 3.1.1. Numbers 变量'_' 
 ```python  
 >>> tax = 12.5 / 100
 >>> price = 100.50
@@ -43,7 +42,7 @@
 113.06  
 ```
 互动模式下，_代表上一条刚打印的表达式，这是个只读变量  
-### [3.1.2. Strings escape以及raw string](#312)  
+### 3.1.2. Strings escape以及raw string  
 作为参数调用print时escape才起作用  
  
 ```python 
@@ -71,7 +70,7 @@ raw string
 >>> print(r'C:\some\name')  # note the r before the quote
 C:\some\name
 ```  
-### [3.1.2. Strings 多行输入以及\的作用](#312a)  
+### 3.1.2. Strings 多行输入以及\的作用  
 一个string分成多行输入时，\可以取消编辑时输入的换行符  
 
 ```python
@@ -109,7 +108,7 @@ Usage: thingy [OPTIONS]
 ```python
 Usage: thingy [OPTIONS]     -h                        Display this usage message     -H hostname               Hostname to connect to
 ```  
-### [3.1.2. Strings index以及slice](#312b)  
+### 3.1.2. Strings index以及slice  
 ```python
 >>> text='python'
 >>> text[3]
@@ -143,7 +142,7 @@ slice的索引范围是个半开区间，也就是[b,e)这样的区间`text[-2:]
 >>> text[6:]
 ''
 ```
-### [3.1.2. Strings 连接](#312c)  
+### 3.1.2. Strings 连接  
 
 ```python
 >>> 'un'*3
@@ -161,7 +160,7 @@ slice的索引范围是个半开区间，也就是[b,e)这样的区间`text[-2:]
 >>> text
 'python'
 ```  
-### [3.1.3. Lists](#313)  
+### 3.1.3. Lists  
 list是mutable的，string是immutable的  
 
 ```python
@@ -221,7 +220,7 @@ list是mutable的，string是immutable的
 >>> x[0][1]
 'b'   
 ```  
-### [4.2. for Statements](#42)  
+### 4.2. for Statements  
 ```python
 >>> for w in words:
 ...     print(w, len(w))
@@ -248,7 +247,7 @@ words[:]是words的一个copy，而不是words本身，所以在words中insert�
 ...             words.insert(0, w)
 ```
 会无限循环下去，不停的在前面插入‘defenestrate'
-### [4.3. The range() Function](#43)  
+### 4.3. The range() Function  
 ```python
 >>> print(range(10))
 range(0, 10)
@@ -263,7 +262,7 @@ range(0, 10
 >>> list(range(5))
 [0, 1, 2, 3, 4]
 ```
-### [4.4. break and continue Statements, and else Clauses on Loops](#44)  
+### 4.4. break and continue Statements, and else Clauses on Loops  
 
 ```python
 >>> forn in range(2, 10):
@@ -285,7 +284,7 @@ range(0, 10
 9 equals 3 * 3
 ```
 break和continue与c语言或者其他什么语言的语义是一样的，而这里的else会在内层循环正常迭代结束之后执行，但是break出来之后不会执行else  
-### [4.6. Defining Functions None以及函数对象](#46)  
+### 4.6. Defining Functions None以及函数对象  
 任何一个函数都会有一个返回值，即使没有return语句，也会返回一个None。  
 函数是一个对象，所以可以  
 
@@ -299,7 +298,7 @@ f(100)
 f100=func(100)
 f100
 ```  
-### [4.7.1. Default Argument Values 及in和is None](#471)  
+### 4.7.1. Default Argument Values 及in和is None  
 
 ```python
 def ask_ok(prompt,retries=4,reminder='Please try again!'):
@@ -361,7 +360,7 @@ def f(a,L=None):
     return  L  
 ```
 另外还可以看到None是用is来比较，而不是==
-### [4.7.2. Keyword Arguments](#472)  
+### 4.7.2. Keyword Arguments  
 keyword实参[^参数]指在调用函数时使用arg=value的形式传入的参数，而在函数定义形式参数列表中arg=value形式的参数arg称为可选参数，value称为缺省值  
 
 ~~~python
@@ -409,7 +408,7 @@ cheeseshop("Limburger", "It's very runny, sir.",
 `{"shopkeeper":"Michael Palin","client":"John Cleese",      "sketch":"Cheese Shop Sketch"}`  
 ***_注意并且理解参数列表中的顺序。_***
   
-###[4.7.4. Unpacking Argument Lists `*`和`**`](#474)  
+### 4.7.4. Unpacking Argument Lists `*`和`**`  
 
 ~~~python
 >>> list(range(3, 6))            # normal call with separate arguments
@@ -418,7 +417,7 @@ cheeseshop("Limburger", "It's very runny, sir.",
 >>> list(range(*args))            # call with arguments unpacked from a list
 [3, 4, 5]  
 ~~~
-args是个list,用元组也是可以的，但是args必须加上*号  
+args是个list,用元组也是可以的，但是args必须加上`*`号  
 
 ~~~python
 >>> def parrot(voltage, state='a stiff', action='voom'):
@@ -430,8 +429,8 @@ args是个list,用元组也是可以的，但是args必须加上*号
 >>> parrot(**d)
 -- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !  
 ~~~  
-同样的，d也必须加上两个`**`号
-### [4.7.5. Lambda Expressions](#475)  
+同样的，d也必须加上`**`号
+### 4.7.5. Lambda Expressions  
 
 ```python
 >>> def make_incrementor(n):
@@ -475,7 +474,7 @@ four
 3
 4
 ```  
-### [4.7.6. Documentation Strings:`__doc__`](#476)  
+### 4.7.6. Documentation Strings:`__doc__`  
 
 ```python
 >>> def my_function():
@@ -506,7 +505,7 @@ Do nothing, but document it.
 ```  
 第一个例子是惯常的函数文档的写法，第二个只是复习一下相关内容。
 
-### [4.7.7. Function Annotations: `__annotations__`](#477)  
+### 4.7.7. Function Annotations: `__annotations__`  
 ```python
 >>> def f(ham: str, eggs: str = 'eggs') -> str:
 ...     print("Annotations:", f.__annotations__)
@@ -529,5 +528,217 @@ Arguments: spam eggs
 'spam and eggs'
 ```
 似乎不需要解释什么了。
-### [4.8. Intermezzo: Coding Style](#48)  
+### 4.8. Intermezzo: Coding Style  
 ***`CamelCase` for classes and `lower_case_with_underscores` for functions and methods***
+### 5.1. More on Lists  
+所有list的方法都在这了：  
+
+- `list.append(x)`  
+* `list.extend(iterable)`
+- `list.insert(i, x)`
+- `list.remove(x)`
+- `list.pop([i])`
+- `list.clear()`
+- `list.index(x[, start[, end]])`
+- `list.count(x)`
+- `list.sort(key=None, reverse=False)`
+- `list.reverse()`
+- `list.copy()`  
+
+```python
+>>> fruits = ['orange', 'apple', 'pear', 'banana', 'kiwi', 'apple', 'banana']
+>>> fruits.count('apple')
+2
+>>> fruits.count('tangerine')
+0
+>>> fruits.index('banana')
+3
+>>> fruits.index('banana', 4)  # Find next banana starting a position 4
+6
+>>> fruits.reverse()
+>>> fruits
+['banana', 'apple', 'kiwi', 'banana', 'pear', 'apple', 'orange']
+>>> fruits.append('grape')
+>>> fruits
+['banana', 'apple', 'kiwi', 'banana', 'pear', 'apple', 'orange', 'grape']
+>>> fruits.sort()
+>>> fruits
+['apple', 'apple', 'banana', 'banana', 'grape', 'kiwi', 'orange', 'pear']
+>>> fruits.pop()
+'pear'
+```
+`insert`, `remove` 和 `sort`返回`None`
+### 5.1.1. Using Lists as Stacks
+
+```python
+>>> stack = [3, 4, 5]
+>>> stack.append(6)
+>>> stack.append(7)
+>>> stack
+[3, 4, 5, 6, 7]
+>>> stack.pop()
+7
+>>> stack
+[3, 4, 5, 6]
+>>> stack.pop()
+6
+>>> stack.pop()
+5
+>>> stack
+[3, 4]
+```
+### 5.1.2. Using Lists as Queues
+由于list存储方式的原因，直接使用list做为队列效率并不高，可以用 `collections.deque`:
+
+```python
+>>> from collections import deque
+>>> queue = deque(["Eric", "John", "Michael"])
+>>> queue.append("Terry")           # Terry arrives
+>>> queue.append("Graham")          # Graham arrives
+>>> queue.popleft()                 # The first to arrive now leaves
+'Eric'
+>>> queue.popleft()                 # The second to arrive now leaves
+'John'
+>>> queue                           # Remaining queue in order of arrival
+deque(['Michael', 'Terry', 'Graham'])
+```
+### 5.1.3. List Comprehensions
+不确定Comprehensions该怎么翻译，看例子：
+
+```
+[x**2 for x in range(10)]
+
+[(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+```
+一个list comprehension包括一对方括号`[]`,在方括号里边有一个表达式，比如上面两个例子里的`x**2`和`(x,y)`, 这个表达式后面跟着一个`for`语句, 然后是0个或者多个`for`或者`if`语句. 
+上面两个例子分别等价于：
+
+```python
+>>> squares = []
+>>> for x in range(10):
+...     squares.append(x**2)
+...
+>>> squares
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+```
+和
+
+```python
+>>> combs = []
+>>> for x in [1,2,3]:
+...     for y in [3,1,4]:
+...         if x != y:
+...             combs.append((x, y))
+...
+>>> combs
+[(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+```
+对于第一个例子还有等价的做法，不过这是另外一个问题了。
+
+```python
+squares = list(map(lambda x: x**2, range(10)))
+```
+更多的例子：
+
+```python
+>>> vec = [-4, -2, 0, 2, 4]
+>>> # create a new list with the values doubled
+
+>>> [x*2 for x in vec]
+[-8, -4, 0, 4, 8]
+
+>>> # filter the list to exclude negative numbers
+>>> [x for x in vec if x >= 0]
+[0, 2, 4]
+
+>>> # apply a function to all the elements
+>>> [abs(x) for x in vec]
+[4, 2, 0, 2, 4]
+
+>>> # call a method on each element
+>>> freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
+>>> [weapon.strip() for weapon in freshfruit]
+['banana', 'loganberry', 'passion fruit']
+
+>>> # create a list of 2-tuples like (number, square)
+>>> [(x, x**2) for x in range(6)]
+[(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
+
+>>> # the tuple must be parenthesized, otherwise an error is raised
+>>> [x, x**2 for x in range(6)]
+  File "<stdin>", line 1, in <module>
+    [x, x**2 for x in range(6)]
+               ^
+SyntaxError: invalid syntax
+
+>>> # flatten a list using a listcomp with two 'for'
+>>> vec = [[1,2,3], [4,5,6], [7,8,9]]
+>>> [num for elem in vec for num in elem]
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+>>> from math import pi
+>>> [str(round(pi, i)) for i in range(1, 6)]
+['3.1', '3.14', '3.142', '3.1416', '3.14159']
+```
+***注意第21和第24行两个例子的区别。***
+
+### Nested List Comprehensions
+
+```python
+>>> matrix = [
+...     [1, 2, 3, 4],
+...     [5, 6, 7, 8],
+...     [9, 10, 11, 12],
+... ]
+```
+我们要把这个矩阵转置，不过为了好理解，首先看这个例子:
+
+```python
+>>> [row[i] for row in matrix for i in range(4)]
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+```
+比较下：
+
+```python
+>>> [[row[i] for row in matrix] for i in range(4)]
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]
+```
+第一个例子等价于：
+
+```python
+>>> transposed = []
+>>> for row in matrix:
+...     for i in range(4):
+...         transposed.append(row[i])
+...
+```
+相应的第二个例子就等价于:
+
+```python
+>>> transposed = []
+>>> for i in range(4):
+...     # the following 3 lines implement the nested listcomp
+...     transposed_row = []
+...     for row in matrix:
+...         transposed_row.append(row[i])
+...     transposed.append(transposed_row)
+...
+>>> transposed
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+```
+也就是
+
+```python
+>>> transposed = []
+>>> for i in range(4):
+...     transposed.append([row[i] for row in matrix])
+...
+>>> transposed
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+```
+当然实现矩阵转置可以调用内置函数`zip`:
+
+```python
+>>> list(zip(*matrix))
+[(1, 5, 9), (2, 6, 10), (3, 7, 11), (4, 8, 12)]
+```
