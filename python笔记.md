@@ -682,7 +682,7 @@ SyntaxError: invalid syntax
 ```
 ***注意第21和第24行两个例子的区别。***
 
-### Nested List Comprehensions
+### 5.1.4. Nested List Comprehensions 矩阵转置
 
 ```python
 >>> matrix = [
