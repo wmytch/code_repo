@@ -742,3 +742,351 @@ SyntaxError: invalid syntax
 >>> list(zip(*matrix))
 [(1, 5, 9), (2, 6, 10), (3, 7, 11), (4, 8, 12)]
 ```
+当然我们要注意的是list函数返回的list里的元素是元组，我们也可以猜测zip返回的实际上是个可迭代的对象，跟range一样。
+### 5.2. The del statement 删除对象  
+
+```python
+>>> a=[1,2,3]
+>>> del a
+>>> a
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'a' is not defined
+```
+### 5.3. Tuples and Sequences 空元组和只有一个元素的元组 
+
+```python
+>>> empty = ()
+>>> singleton = 'hello',    # <-- note trailing comma
+>>> len(empty)
+0
+>>> empty
+()
+>>> len(singleton)
+1
+>>> singleton
+('hello',)
+```
+单个元素的元组要注意后面跟着的逗号
+
+```python
+>>> ss=(1)
+>>> ss
+1
+>>> ss[0]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'int' object is not subscriptable
+>>> ss=(1,)
+>>> ss
+(1,)
+>>> ss[0]
+1
+```
+### 5.3. Tuples and Sequences 嵌套
+
+```python
+>>> t = 12345, 54321, 'hello!'
+>>> u = t, (1, 2, 3, 4, 5)
+>>> u
+((12345, 54321, 'hello!'), (1, 2, 3, 4, 5))
+>>> u = t, 1, 2, 3, 4, 5
+>>> u
+((12345, 54321, 'hello!'), 1, 2, 3, 4, 5)
+```
+### 5.3. Tuples and Sequences 元组的pack和unpack
+
+```python
+>>> t = 12345, 54321, 'hello!'
+>>> >>> t
+(12345, 54321, 'hello!')
+>>> x, y, z = t
+>>> >>> x
+12345
+>>> y
+54321
+>>> z
+'hello!'
+```
+`t = 12345, 54321, 'hello!'`称为tuple packing，`x, y, z = t`则称为sequence unpacking.既然叫做sequence unpacking而不是tuple unpacking，当然是有道理的：
+
+```python
+>>> v=([3, 4, 5], [4, 3, 2])
+>>> a,b=v
+>>> a
+[3, 4, 5]
+>>> b
+[4, 3, 2] 
+```
+而`x,y,z=1,2,3`这样所谓的多重赋值则实际上是tuple packing和sequence unpacking的组合。
+### 5.3. Tuples and Sequences immutable和mutable  
+tuple是不可修改的：
+
+```python
+>>> t = 12345, 54321, 'hello!'
+>>> t[0]
+12345
+>>> t
+(12345, 54321, 'hello!')
+>>> t[0] = 88888
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object does not support item assignment
+```
+但是可以包含可修改的对象：
+
+```python
+>>> v = ([1, 2, 3], [3, 2, 1])
+>>> v
+([1, 2, 3], [3, 2, 1])
+>>> v[0][1]
+2
+>>> v[0][1]=3
+>>> v[0][1]
+3
+>>> v
+([1, 3, 3], [3, 2, 1])
+>>> v[0]=[2,3,4]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object does not support item assignment
+```
+比较：
+
+```python
+>>> v=([2,3,4],[3,2,1])
+>>> for t in v:
+...     for i in range(len(t)):
+...             t[i]=t[i]+1
+... 
+>>> v
+([3, 4, 5], [4, 3, 2])
+```
+### 5.3. Tuples and Sequences 元组和list的区别
+元组是immutable，其元素通常是异构(heterogeneous)的，通常通过unpacking或者index来访问其元素。  
+list是mutable的，其元素通常是同构的(homogeneous),其元素通常通过迭代访问。
+
+### 5.4. Sets 创建
+
+```python
+>>> basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+>>> print(basket)   # show that duplicates have been removed,the result will be the same even if not using the print function             
+{'orange', 'banana', 'pear', 'apple'}
+>>> a = set('abracadabra')
+>>> a
+{'a', 'r', 'b', 'c', 'd'}
+```
+### 5.4. Sets 空set
+要创建一个空set，必须用`set()`，而不是`{}`，`{}`将创建一个空dictionary
+### 5.4. Sets 运算
+
+```python
+>>> basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+>>> basket                      
+{'orange', 'banana', 'pear', 'apple'}
+>>> 'orange' in basket                 
+True
+>>> 'crabgrass' in basket
+False
+>>> a = set('abracadabra')
+>>> b = set('alacazam')
+>>> a                                  # unique letters in a
+{'a', 'r', 'b', 'c', 'd'}
+>>> a - b                              # letters in a but not in b
+{'r', 'd', 'b'}
+>>> a | b                              # letters in a or b or both
+{'a', 'c', 'r', 'd', 'b', 'm', 'z', 'l'}
+>>> a & b                              # letters in both a and b
+{'a', 'c'}
+>>> a ^ b                              # letters in a or b but not both
+{'r', 'd', 'b', 'm', 'z', 'l'}
+```
+### 5.4. Sets set comprehensions
+
+```python
+>>> a = {x for x in 'abracadabra' if x not in 'abc'}
+>>> a
+{'r', 'd'}  
+```
+### 5.5. Dictionaries key
+key必须是不可修改的，字符串和数字，元组也可以，只要元组只包含字符串和数字或者元组，不可直接或者间接包含可修改的元素。  
+list是不能做key的。
+### 5.5. Dictionaries 运算
+
+```python
+>>> tel = {'jack': 4098, 'sape': 4139}
+>>> tel['guido'] = 4127
+>>> tel
+{'sape': 4139, 'guido': 4127, 'jack': 4098}
+>>> tel['jack']
+4098
+>>> del tel['sape']
+>>> tel['irv'] = 4127
+>>> tel
+{'guido': 4127, 'irv': 4127, 'jack': 4098}
+>>> list(tel.keys())
+['irv', 'guido', 'jack']
+>>> sorted(tel.keys())
+['guido', 'irv', 'jack']
+>>> 'guido' in tel
+True
+>>> 'jack' not in tel
+False
+```
+### 5.5. Dictionaries dict()
+
+```python
+>>> dict([('sape', 4139), ('guido', 4127), ('jack', 4098)])
+{'sape': 4139, 'jack': 4098, 'guido': 4127}
+```
+或者
+
+```python
+>>> dict(sape=4139, guido=4127, jack=4098)
+{'sape': 4139, 'jack': 4098, 'guido': 4127}
+```
+### 5.5. Dictionaries dict comprehensions
+
+```python
+>>> {x: x**2 for x in (2, 4, 6)}
+{2: 4, 4: 16, 6: 36}
+```
+### 5.6. Looping Techniques items():同时获取dict的key和value
+
+```python
+>>> knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+>>> for k, v in knights.items():
+...     print(k, v)
+...
+gallahad the pure
+robin the brave
+```
+### 5.6. Looping Techniques  enumerate():同时获取sequence的索引和相应的值
+
+```python
+>>> for i, v in enumerate(['tic', 'tac', 'toe']):
+...     print(i, v)
+...
+0 tic
+1 tac
+2 toe
+```
+### 5.6. Looping Techniques zip():同时在多个sequence上循环
+
+```python
+>>> questions = ['name', 'quest', 'favorite color']
+>>> answers = ['lancelot', 'the holy grail', 'blue']
+>>> for q, a in zip(questions, answers):
+...     print('What is your {0}?  It is {1}.'.format(q, a))
+...
+What is your name?  It is lancelot.
+What is your quest?  It is the holy grail.
+What is your favorite color?  It is blue.
+```
+### 5.6. Looping Techniques reversed():反向访问一个sequence
+
+```python
+>>> for i in reversed(range(1, 10, 2)):
+...     print(i)
+...
+9
+7
+5
+3
+1
+```
+### 5.6. Looping Techniques sorted():访问的时候排序
+
+```python
+>>> basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+>>> for f in sorted(set(basket)):
+...     print(f)
+...
+apple
+banana
+orange
+pear
+```
+### 5.7. More on Conditions `in/not in` 和 `is/not is`
+`in`或者`not in`检查一个序列中存在或者不存在一个值。  
+`is`或者`not is`检查两个对象是否同一对象，应该说是两个object reference是否指向同一个object
+### 5.7. More on Conditions chain
+
+```python
+>>> a=1
+>>> b=2
+>>> c=3
+>>> a<b==c
+False
+>>> a<b<c
+True
+>>> a<b>c
+False
+>>> a>b<c
+False
+>>> a>b>c
+False
+```
+分别等价于
+
+```python
+>>> a<b and b==c
+False
+>>> a<b and b<c
+True
+>>> a>b and b<c
+False
+>>> a>b and b>c
+False
+```
+### 5.7. More on Conditions short-circuit以及表达式返回值
+
+```python
+>>> string1, string2, string3 = '', 'Trondheim', 'Hammer Dance'
+>>> non_null = string1 or string2 or string3
+>>> non_null
+'Trondheim'
+>>> non_null = string1 or string3 or string2
+>>> non_null
+'Hammer Dance'
+>>> non_null=True or string1 or string3 or string2 
+>>> non_null
+True
+>>> non_null=False or string1 or string3 or string2 
+>>> non_null
+'Hammer Dance'
+```
+这里可以看到所谓short-circuit，以及表达式返回的是比较停止的地方的相应的变量值而不是bool值
+### 5.7. More on Conditions `=`和`==`
+python是不允许在表达式内部进行赋值的。
+
+```python
+>>> if a=3 and a>4:
+  File "<stdin>", line 1
+    if a=3 and a>4:
+        ^
+SyntaxError: invalid syntax
+```
+这样对于C程序员来说，虽然某些情况下不太方便，但是至少避免了在需要`==`时打成了`=`这样的错误。
+### 5.8. Comparing Sequences and Other Types
+
+```python
+(1, 2, 3)              < (1, 2, 4)
+[1, 2, 3]              < [1, 2, 4]
+'ABC' < 'C' < 'Pascal' < 'Python'
+(1, 2, 3, 4)           < (1, 2, 4)
+(1, 2)                 < (1, 2, -1)
+(1, 2, 3)             == (1.0, 2.0, 3.0)
+(1, 2, ('aa', 'ab'))   < (1, 2, ('abc', 'a'), 4)
+```
+不同类型的对象是可以比较的，但是这些对象必须提供相应的比较方法，比方说上面的`(1, 2, 3)             == (1.0, 2.0, 3.0)`,也可以理解为必须是相容的对象。比方说：
+
+```python
+>>> 1 < 'a'
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: '<' not supported between instances of 'int' and 'str'
+>>> 1 < 1.2
+True
+```
+

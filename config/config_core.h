@@ -19,7 +19,7 @@ public:
 	int  getInt(const char* groupKey, const char* fieldKey);
 	char *getStr(const char* groupKey, const char* fieldKey);
 	bool openFile(const char* pathName, const char* type);
-protected:
+private:
 	bool getKey(const char* groupKey, const char* fieldKey);
 	FILE* fp;
 	char  fieldValue[CONFIGLEN];
