@@ -1056,7 +1056,7 @@ True
 >>> non_null
 'Hammer Dance'
 ```
-这里可以看到所谓short-circuit，以及表达式返回的是比较停止的地方的相应的变量值而不是bool值
+这里可以看到所谓short-circuit，以及表达式返回的是比较停止的地方的表达式的值，而这个表达式的值可能就是一个变量的值，不必是个bool值或者转化成bool值
 ### 5.7. More on Conditions `=`和`==`
 python是不允许在表达式内部进行赋值的。
 
