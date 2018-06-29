@@ -160,7 +160,7 @@ slice的索引范围是个半开区间，也就是[b,e)这样的区间`text[-2:]
 >>> text
 'python'
 ```  
-### 3.1.3. Lists  
+### 3.1.3. Lists append/replace/remove/clear  
 list是mutable的，string是immutable的  
 
 ```python
@@ -169,7 +169,7 @@ list是mutable的，string是immutable的
 >>> cubes
 [1, 8, 27, 64, 125]  
 ```
-还可以append  
+可以append  
 
 ```python
 >>> cubes.append(216)  # add the cube of 6
@@ -207,7 +207,7 @@ list是mutable的，string是immutable的
 >>> letters
 []  
 ```
-可以嵌套  
+### 3.1.3. Lists 嵌套  
 
 ```python
 >>> a =['a', 'b', 'c']
@@ -220,7 +220,7 @@ list是mutable的，string是immutable的
 >>> x[0][1]
 'b'   
 ```  
-### 4.2. for Statements  
+### 4.2. for Statements range的copy及改变  
 ```python
 >>> for w in words:
 ...     print(w, len(w))
@@ -253,7 +253,7 @@ words[:]是words的一个copy，而不是words本身，所以在words中insert�
 range(0, 10)
 >>> x=range(10)
 >>> print(x)
-range(0, 10
+range(0, 10)
 ```
 可见range返回一个可迭代的对象，但不是list本身：
 可以用for循环迭代，也可以使用list()函数生成一个list  
@@ -356,7 +356,7 @@ in用来检查一个序列中是否包含某个值
 def f(a,L=None):
     if L is None:
         L =[]
-        L.append(a)
+    L.append(a)
     return  L  
 ```
 另外还可以看到None是用is来比较，而不是==
@@ -430,6 +430,31 @@ args是个list,用元组也是可以的，但是args必须加上`*`号
 -- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !  
 ~~~  
 同样的，d也必须加上`**`号
+可以这么认为,`*`解开一个list或者元组,`**`解开一个dict.  
+实际上`*`把list或者元组外面的括号去掉,使之成为一个序列.而`**`则要复杂一些,解开之外,还要给相应的形参赋值.
+
+```python
+>>> m=[1,2,[3,4]]
+>>> u=*m
+  File "<stdin>", line 1
+SyntaxError: can't use starred expression here
+>>> n=[[1,2]]
+>>> >>> u=*n,
+>>> u
+([1, 2],)
+>>> u=*n,1
+>>> u
+([1, 2], 1)
+>>> u=**n,1
+  File "<stdin>", line 1
+    u=**n,1
+       ^
+SyntaxError: invalid syntax
+>>> u=*(*n),1
+  File "<stdin>", line 1
+SyntaxError: can't use starred expression here
+```
+***注意这里的赋值事实上是个元组packing***
 ### 4.7.5. Lambda Expressions  
 
 ```python
@@ -527,7 +552,7 @@ Annotations: {}
 Arguments: spam eggs
 'spam and eggs'
 ```
-似乎不需要解释什么了。
+似乎不需要解释什么了,只是看一下一个完整的函数签名应该是什么样的.跟swift很类似,或者说这种签名形式是目前的潮流.
 ### 4.8. Intermezzo: Coding Style  
 ***`CamelCase` for classes and `lower_case_with_underscores` for functions and methods***
 ### 5.1. More on Lists  
@@ -633,11 +658,12 @@ deque(['Michael', 'Terry', 'Graham'])
 >>> combs
 [(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
 ```
-对于第一个例子还有等价的做法，不过这是另外一个问题了。
+对于第一个例子还有等价的做法，不过这是另外一个问题了:
 
 ```python
 squares = list(map(lambda x: x**2, range(10)))
 ```
+
 更多的例子：
 
 ```python
@@ -680,7 +706,7 @@ SyntaxError: invalid syntax
 >>> [str(round(pi, i)) for i in range(1, 6)]
 ['3.1', '3.14', '3.142', '3.1416', '3.14159']
 ```
-***注意第21和第24行两个例子的区别。***
+***注意第21和第24行两个例子的区别.当然,`()`改成`[]`也是正确的,只不过生成的是个嵌套的list***
 
 ### 5.1.4. Nested List Comprehensions 矩阵转置
 
@@ -793,7 +819,11 @@ TypeError: 'int' object is not subscriptable
 >>> u = t, 1, 2, 3, 4, 5
 >>> u
 ((12345, 54321, 'hello!'), 1, 2, 3, 4, 5)
+>>> u=*t,1,2,3,4,5
+>>> u
+(12345, 54321, 'hello!', 1, 2, 3,4,5)
 ```
+复习下`*`的作用,符合大多数语言中的语义,`*`就是个解析运算符,把外层括号去掉
 ### 5.3. Tuples and Sequences 元组的pack和unpack
 
 ```python
@@ -878,7 +908,7 @@ list是mutable的，其元素通常是同构的(homogeneous),其元素通常通�
 ```
 ### 5.4. Sets 空set
 要创建一个空set，必须用`set()`，而不是`{}`，`{}`将创建一个空dictionary
-### 5.4. Sets 运算
+### 5.4. Sets 运算 `in`,`-`,`|`,`&`,`^`
 
 ```python
 >>> basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
@@ -901,6 +931,7 @@ False
 >>> a ^ b                              # letters in a or b but not both
 {'r', 'd', 'b', 'm', 'z', 'l'}
 ```
+***注意没有`+`***
 ### 5.4. Sets set comprehensions
 
 ```python
@@ -909,9 +940,9 @@ False
 {'r', 'd'}  
 ```
 ### 5.5. Dictionaries key
-key必须是不可修改的，字符串和数字，元组也可以，只要元组只包含字符串和数字或者元组，不可直接或者间接包含可修改的元素。  
+key必须是不可修改的，比如字符串和数字，元组也可以，但是元组只能包含字符串和数字或者元组，不可直接或者间接包含可修改的元素。  
 list是不能做key的。
-### 5.5. Dictionaries 运算
+### 5.5. Dictionaries 运算 `[]`,`del` `keys()`,`in`
 
 ```python
 >>> tel = {'jack': 4098, 'sape': 4139}
@@ -1089,4 +1120,93 @@ TypeError: '<' not supported between instances of 'int' and 'str'
 >>> 1 < 1.2
 True
 ```
+### 6. Modules  `__name__`
+一个module必须是一个文件,其文件名以`.py`做后缀.在一个module里面,`__name__`就代表了这个module的名字.  
+比方说我们创建了这么一个module:`fibo.py`,其文件内容如下:  
 
+```python
+# Fibonacci numbers module
+
+def fib(n):    # write Fibonacci series up to n
+    a, b = 0, 1
+    while a < n:
+        print(a, end=' ')
+        a, b = b, a+b
+    print()
+
+def fib2(n):   # return Fibonacci series up to n
+    result = []
+    a, b = 0, 1
+    while a < n:
+        result.append(a)
+        a, b = b, a+b
+    return result
+```
+我们可以这样使用:
+
+```python
+>>> import fibo
+>>> fibo.fib(1000)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+>>> fibo.fib2(100)
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+>>> fibo.__name__
+'fibo'
+```
+当然也可以这样:
+
+```python
+>>> fib = fibo.fib
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+```
+### 6.1. More on Modules `import`和`as`以及`reload`
+
+```python
+>>> from fibo import fib, fib2
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+>>> from fibo import *
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+>>> import fibo as fib
+>>> fib.fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+>>> from fibo import fib as fibonacci
+>>> fibonacci(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+```
+
+```python
+import importlib; 
+importlib.reload(modulename)
+```
+在互动模式下,如果期间修改了某个之前已经import过的module,而又不打算退出环境重新进入,就可以调用这个方法.
+### 6.1.1. Executing modules as scripts `"__main__"`
+在上面的`fibo.py`文件的末尾加上:
+
+```python
+if __name__ == "__main__":
+    import sys
+    fib(int(sys.argv[1]))
+```
+就可以这样执行这个脚本了:
+
+```python
+$ python fibo.py 50
+0 1 1 2 3 5 8 13 21 34
+```
+这样并不影响import
+### 6.1.2. The Module Search Path
+假设要import一个叫spam的module,首先会寻找是否存在一个叫spam的系统内建module,如果没有,则通过`sys.path`来查找是否存在这么一个文件.`sys.path`包含这些内容:
+
+- 脚本所在目录,或者是当前目录`./`,或者是启动时带的目录名如`path/script.py`,那么path就会包含在`sys.path`里.
+- PYTHONPATH 环境变量指定的目录,这个可以放在profile中
+- 安装时的一些缺省的目录.
+
+另外`sys.path`是不包含符号链接的,加入path前符号链接就已经被解析了.  
+python程序运行过程中可以修改`sys.path`.  
+另外,脚本所在目录是放在`sys.path`最前面的,在`sys.path`中的顺序决定了翻译器搜索的顺序.
