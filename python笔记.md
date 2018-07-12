@@ -1210,3 +1210,110 @@ $ python fibo.py 50
 另外`sys.path`是不包含符号链接的,加入path前符号链接就已经被解析了.  
 python程序运行过程中可以修改`sys.path`.  
 另外,脚本所在目录是放在`sys.path`最前面的,在`sys.path`中的顺序决定了翻译器搜索的顺序.
+### 6.1.3. “Compiled” Python files 
+- -o 移除所有的assert
+- -oo 移除所有的asset和`__doc__`字符串
+- 一个`.pyc`文件并不比一个`.py`文件运行得更快,只是在load时更快些
+- ` compileall`可以把一个目录下的所有module编译成`.pyc`文件
+
+### 6.2. Standard Modules 提示符
+
+```python
+>>> import sys
+>>> sys.ps1
+'>>> '
+>>> sys.ps2
+'... '
+>>> sys.ps1 = 'C> '
+C> print('Yuck!')
+Yuck!
+C>
+```
+### 6.2. Standard Modules sys.path
+如前所述,`sys.path`是翻译器寻找module的路径,是可以动态更改的,比如:
+
+```python
+>>> import sys
+>>> sys.path.append('/ufs/guido/lib/python')
+```
+### 6.3. The dir() Function
+`dir()`函数返回一个模块中所定义的所有名字或者说符号的名字,包括变量,模块,函数名等等.
+
+```python
+>>> import fibo, sys
+>>> dir(fibo)
+['__name__', 'fib', 'fib2']
+>>> dir(sys)  
+['__displayhook__', '__doc__', '__excepthook__', '__loader__', '__name__',
+ '__package__', '__stderr__', '__stdin__', '__stdout__',
+ '_clear_type_cache', '_current_frames', '_debugmallocstats', '_getframe',
+ '_home', '_mercurial', '_xoptions', 'abiflags', 'api_version', 'argv',
+ 'base_exec_prefix', 'base_prefix', 'builtin_module_names', 'byteorder',
+ 'call_tracing', 'callstats', 'copyright', 'displayhook',
+ 'dont_write_bytecode', 'exc_info', 'excepthook', 'exec_prefix',
+ 'executable', 'exit', 'flags', 'float_info', 'float_repr_style',
+ 'getcheckinterval', 'getdefaultencoding', 'getdlopenflags',
+ 'getfilesystemencoding', 'getobjects', 'getprofile', 'getrecursionlimit',
+ 'getrefcount', 'getsizeof', 'getswitchinterval', 'gettotalrefcount',
+ 'gettrace', 'hash_info', 'hexversion', 'implementation', 'int_info',
+ 'intern', 'maxsize', 'maxunicode', 'meta_path', 'modules', 'path',
+ 'path_hooks', 'path_importer_cache', 'platform', 'prefix', 'ps1',
+ 'setcheckinterval', 'setdlopenflags', 'setprofile', 'setrecursionlimit',
+ 'setswitchinterval', 'settrace', 'stderr', 'stdin', 'stdout',
+ 'thread_info', 'version', 'version_info', 'warnoptions']
+```
+ 如果调用`dir()`时没有提供参数,则返回到调用处为止之前所有的名字
+ 
+```python
+>>> a = [1, 2, 3, 4, 5]
+>>> import fibo,sys
+>>> fib = fibo.fib
+>>> dir()
+['__builtins__', '__name__', 'a', 'fib', 'fibo', 'sys']
+```
+### 6.4. Packages `__init__.py`
+假设有这么一个package目录结构:
+
+```python
+sound/                          Top-level package
+      __init__.py               Initialize the sound package
+      formats/                  Subpackage for file format conversions
+              __init__.py
+              wavread.py
+              wavwrite.py
+              aiffread.py
+              aiffwrite.py
+              auread.py
+              auwrite.py
+              ...
+      effects/                  Subpackage for sound effects
+              __init__.py
+              echo.py
+              surround.py
+              reverse.py
+              ...
+      filters/                  Subpackage for filters
+              __init__.py
+              equalizer.py
+              vocoder.py
+              karaoke.py
+              ...
+```
+***注意当要导入这个package时,python是从`sys.path`所指路径中寻找module的,所以当翻译器抱怨说找不到模块的时候,记得把相关路径加入到`sys.path`中***  
+`__init__.py`对于一个package是必须的,可以避免一些符号隐藏的问题,当然这是python搜索策略的原因.这个文件可以是一个空文件,也可以在其中做一些初始化的工作.  
+
+### 6.4. Packages import以及from
+当使用`from package import item`时,其中的`item`可以是子模块,或者子包,或者在这个包中定义的其他名字,比如类,函数,变量等.  
+反过来,当使用`import item.subitem.subsubitem`时,除了最后一项外,其余的都必须是package的名字,最后一项可以是个module也可以是个package,但不能是类或者函数或者变量.  
+我们可以看到使用上的区别:
+
+```python
+import sound.effects.echo
+sound.effects.echo.echofilter(input, output, delay=0.7, atten=4)
+
+from sound.effects import echo
+echo.echofilter(input, output, delay=0.7, atten=4)
+
+from sound.effects.echo import echofilter
+echofilter(input, output, delay=0.7, atten=4)
+```
