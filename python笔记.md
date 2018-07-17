@@ -1317,3 +1317,69 @@ echo.echofilter(input, output, delay=0.7, atten=4)
 from sound.effects.echo import echofilter
 echofilter(input, output, delay=0.7, atten=4)
 ```
+
+### 6.4.1. Importing * From a Package `__all__`  
+如果`__init__.py`里定义了一个叫做`__all__`的列表,那么当使用`from package import *`时只会导入该列表中出现的module.例如在`sound/effects/__init__.py`中如果包含了
+`__all__ = ["echo", "surround", "reverse"]` ,那么`from sound.effects import *`将会导入这三个子module中的名字. 
+如果没有定义`__all__`,则只导入在`__init__.py`中定义的名字,以及之前已经显式导入的module中的名字.比如:  
+
+```python
+import sound.effects.echo
+import sound.effects.surround
+from sound.effects import *
+```
+这里的意思就是,我们将来使用echo或者surround中的名字的时候,就不需要再加上`sound.effects.echo`或者`sound.effects.surround`之类的前缀了.换句话说,前面两个import等价于在`__all__`中的定义.  
+最后,尽可能使用`from Package import specific_submodule`,而不是`from package import *`,只是要注意下重名的问题.
+### 6.4.2. Intra-package References 相对/绝对导入
+- 绝对导入  
+比如`sound.filters.vocoder`模块需要使用`sound.effects`中的`echo`模块,则可以`from sound.effects import echo`.  
+- 相对导入
+比如在`surround`模块中可以
+
+```python
+from . import echo
+from .. import formats
+from ..filters import equalizer
+```
+*注意最后一句当中filters前面是`..`,而不是`...`或者其他的什么.*  
+**最后,一个python应用的主模块,必须使用绝对导入来导入其他模块.**
+### 6.4.2. Intra-package References 主模块导入
+一个python应用的主模块,必须使用绝对导入来导入其他模块.因为,我们知道,一个module的名字对应了文件系统中的一个文件,而相对导入也就对应了通过相对路径查找文件的过程,而一个主模块的名字总是`__main__`,,如果在主模块中使用相对导入,就会从`__main__`出发形成一个相对路径,而`__main__`不能是个package.
+例如这样的一个目录结构:
+
+```
+a.py
+b.py
+__main__/
+    b.py
+```
+a.py内容是:
+
+```python
+from .b import bc
+
+if __name__=='__main__':
+    bc() 
+```
+两个b.py的内容都不影响这里的讨论,就不列出了.  
+于是有:
+
+```
+$ python3 a.py
+Traceback (most recent call last):
+  File "a.py", line 1, in <module>
+    from .b import bc
+ModuleNotFoundError: No module named '__main__.b'; '__main__' is not a package
+```
+如果把`__main__`目录删掉,结果是一样的,因为python解释器已经禁止使用`__main__`作为一个package的名字.  
+但是如果我们修改a.py的导入语句为:
+`from b import bc`,那么:  
+
+```
+$ python3 a.py 
+bc
+```
+也就是说,只有看到`.`或者`..`的时候解释器才会以当前模块的名字为出发点组织一个相对导入。这一点对任何module都是一样的，所以导入当前目录的module时，不要画蛇添足的使用`from . import module`。  
+**因此在主模块中可以从当前目录导入一个模块而不使用绝对导入,记得不要加`.`。**
+### 6.4关于import的题外###
+**事实上，不论是文档还是上面所做的笔记，对在实际中出现各种与相对导入有关的错误时都没有什么实际意义，这种时候只要祭出终极大法`sys.path.append`就都能解决了，所以，忘了相对导入吧。**
