@@ -1465,7 +1465,7 @@ ModuleNotFoundError: No module named 'topmodule2.func2'; 'topmodule2' is not a p
 因为正如前面所说:  
 **当使用`from package import item`时,其中的`item`可以是子模块,或者子包,或者在这个包中定义的其他名字,比如类,函数,变量等.  
 反过来,当使用`import item.subitem.subsubitem`时,除了最后一项外,其余的都必须是package的名字,最后一项可以是个module也可以是个package,但不能是类或者函数或者变量.**  
-上面的这几个例子，用的都是***_绝对导入_***，这是必须了解的。  
+上面的这几个例子，用的都是_***绝对导入***_，这是必须了解的。  
 如果我们把`main.py`中的`import topmodule1`分别改成  
 
 import语句|错误提示
@@ -1489,7 +1489,7 @@ import语句|错误提示
 `from . import topmodule2` | `ImportError: attempted relative import with no known parent package`
 `from .. import topmodule2` | `ValueError: attempted relative import beyond top-level package`
   
-所以，虽然错误不同，但结论就是**_在这样的一个目录结构下，没有任何需要相对导入的需求，在这种情况下就不要考虑使用什么相对导入了，那是自寻烦恼_**。这时候需要做的选择仅仅只是`from package import item` 还是`import item.subitem.subsubitem`。  
+所以，虽然错误不同，但结论就是_**在这样的一个目录结构下，没有任何需要相对导入的需求，在这种情况下就不要考虑使用什么相对导入了，那是自寻烦恼**_。这时候需要做的选择仅仅只是`from package import item` 还是`import item.subitem.subsubitem`。  
 当然如果仅仅如此的话，就不会有那么多与import相关的问题了，所以，我们修改一下当前的目录结构：
 
 ```
@@ -1543,7 +1543,7 @@ $ ./main.py
 package1.p1m1
 func11
 ```
-**注意:**这是在main.py中以绝对导入方式导入模块，并不代表其他情况下也正确。  
+**注意**:这是在main.py中以绝对导入方式导入模块，并不代表其他情况下也正确。  
 我们还可以把`main.py`改成这样：
 
 ```python
