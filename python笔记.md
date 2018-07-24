@@ -1381,5 +1381,184 @@ bc
 ```
 也就是说,只有看到`.`或者`..`的时候解释器才会以当前模块的名字为出发点组织一个相对导入。这一点对任何module都是一样的，所以导入当前目录的module时，不要画蛇添足的使用`from . import module`。  
 **因此在主模块中可以从当前目录导入一个模块而不使用绝对导入,记得不要加`.`。**
-### 6.4关于import的题外###
-**事实上，不论是文档还是上面所做的笔记，对在实际中出现各种与相对导入有关的错误时都没有什么实际意义，这种时候只要祭出终极大法`sys.path.append`就都能解决了，所以，忘了相对导入吧。**
+### 6.4关于import的一些实例###
+实际上，虽然文档上对于导入做了不少说明，然而实际使用的时候各种与import相关的错误仍然层出不穷，并且看文档实际上也解决不了问题。所以决定看看这怎么回事。
+首先，最开始的地方,这么一个目录结构：
+
+```
+pyiptest/
+    main.py
+    topmoudle1.py
+    topmoudle2.py
+```
+这三个文件的内容分别是：
+
+```python
+main.py:
+#!/usr/bin/env python3
+import topmodule1 
+if __name__=='__main__':
+    topmodule1.func1()
+    
+topmodule1.py:
+from topmodule2 import func2
+def func1():
+    print(__name__)
+    print("func1") 
+    func2()
+    
+topmodule2.py:
+def func2():
+    print(__name__)
+    print("func2") 
+```
+运行一下：
+
+```
+$ ./main.py 
+topmodule1
+func1
+topmodule2
+func2
+```
+结果正确。
+或者，我们把topmodule1作个修改：
+
+```python
+import topmodule2
+def func1():
+    print(__name__)
+    print("func1")
+    topmodule2.func2()
+```
+运行一下：
+
+```
+$ ./main.py 
+topmodule1
+func1
+topmodule2
+func2
+```
+结果仍然正确。
+但是，假如我们对`topmodule1.py`作这样的修改：
+
+```python
+import topmodule2.func2
+def func1():
+    print(__name__)
+    print("func1")
+    func2()
+```
+运行一下：
+
+```
+$ ./main.py 
+Traceback (most recent call last):
+  File "./main.py", line 2, in <module>
+    import topmodule1 
+  File "/Users/mac/pyiptest/topmodule1.py", line 2, in <module>
+    import topmodule2.func2
+ModuleNotFoundError: No module named 'topmodule2.func2'; 'topmodule2' is not a package
+```
+符合预期。  
+因为正如前面所说:  
+**当使用`from package import item`时,其中的`item`可以是子模块,或者子包,或者在这个包中定义的其他名字,比如类,函数,变量等.  
+反过来,当使用`import item.subitem.subsubitem`时,除了最后一项外,其余的都必须是package的名字,最后一项可以是个module也可以是个package,但不能是类或者函数或者变量.**  
+上面的这几个例子，用的都是***_绝对导入_***，这是必须了解的。  
+如果我们把`main.py`中的`import topmodule1`分别改成  
+
+import语句|错误提示
+---------|--------
+`import .topmodule1` | `SyntaxError: invalid syntax` |
+`import ..topmodule1` | `SyntaxError: invalid syntax` |
+`from .topmodule1 import func1` | `ModuleNotFoundError: No module named '__main__.topmodule1'; '__main__' is not a package` 
+`from ..topmodule1 import func1`|`ValueError: attempted relative import beyond top-level package`
+`from . import topmodule1` | `ImportError: cannot import name 'topmodule1'`
+`from .. import topmodule1` | `ValueError: attempted relative import beyond top-level package`
+
+这符合上面所说的:**一个python应用的主模块,必须使用绝对导入来导入其他模块**。  
+这个表格总结了在`main.py`中进行相对导入时的各种错误提示，如果我们在`topmodule1`中进行相对导入会怎样(*增加了一个`__init__.py`文件，不存在的话结果也是一样的*)：
+
+import语句|错误提示
+---------|--------
+`import .topmodule2` | `SyntaxError: invalid syntax` |
+`import ..topmodule2` | `SyntaxError: invalid syntax` |
+`from .topmodule2 import func2` | `ImportError: attempted relative import with no known parent package`
+`from ..topmodule2 import func2` | `ImportError: attempted relative import with no known parent package` 
+`from . import topmodule2` | `ImportError: attempted relative import with no known parent package`
+`from .. import topmodule2` | `ValueError: attempted relative import beyond top-level package`
+  
+所以，虽然错误不同，但结论就是**_在这样的一个目录结构下，没有任何需要相对导入的需求，在这种情况下就不要考虑使用什么相对导入了，那是自寻烦恼_**。这时候需要做的选择仅仅只是`from package import item` 还是`import item.subitem.subsubitem`。  
+当然如果仅仅如此的话，就不会有那么多与import相关的问题了，所以，我们修改一下当前的目录结构：
+
+```
+pyiptest/
+    main.py
+    topmoudle1.py
+    topmoudle2.py
+    package1/
+        __init__.py
+        p1m1.py
+        p1m2.py
+        p1m3.py
+```
+新增的几个文件如下：
+
+```python
+p1m1.py:
+def func11():
+    print(__name__)
+    print("func11") 
+    
+p1m2.py:
+def func12():
+    print(__name__)
+    print("func12")
+
+p1m3.py:
+def func13():
+    print(__name__)
+    print("func13")
+```
+仍然从`main.py`开始：
+
+```python
+#!/usr/bin/env python3
+import package1.p1m1
+if __name__=='__main__':
+    package1.p1m1.func11()
+```
+运行一下：
+
+```
+$ ./main.py 
+package1.p1m1
+func11
+```
+如果这时候我们把`package1/__init__.py`删掉，会有什么结果呢：
+
+```
+$ ./main.py 
+package1.p1m1
+func11
+```
+**注意:**这是在main.py中以绝对导入方式导入模块，并不代表其他情况下也正确。  
+我们还可以把`main.py`改成这样：
+
+```python
+#!/usr/bin/env python3
+from package1 import p1m1
+if __name__=='__main__':
+    p1m1.func11()
+```
+或者：
+
+```python
+#!/usr/bin/env python3
+from package1.p1m1 import func11 
+if __name__=='__main__':
+    func11()
+```
+运行结果是一致的，有没有`package1/__init__.py`都是。  
+这是在`main.py`中导入的结果，在`topmodule1.py`中进行导入结果也是一样的，当然这里说的是**绝对导入**。
