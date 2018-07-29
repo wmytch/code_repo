@@ -1465,7 +1465,7 @@ ModuleNotFoundError: No module named 'topmodule2.func2'; 'topmodule2' is not a p
 因为正如前面所说:  
 **当使用`from package import item`时,其中的`item`可以是子模块,或者子包,或者在这个包中定义的其他名字,比如类,函数,变量等.  
 反过来,当使用`import item.subitem.subsubitem`时,除了最后一项外,其余的都必须是package的名字,最后一项可以是个module也可以是个package,但不能是类或者函数或者变量.**  
-上面的这几个例子，用的都是_***绝对导入***_，这是必须了解的。  
+上面的这几个例子，用的都是***绝对导入***，这是必须了解的。  
 如果我们把`main.py`中的`import topmodule1`分别改成  
 
 import语句|错误提示
@@ -1489,7 +1489,7 @@ import语句|错误提示
 `from . import topmodule2` | `ImportError: attempted relative import with no known parent package`
 `from .. import topmodule2` | `ValueError: attempted relative import beyond top-level package`
   
-所以，虽然错误不同，但结论就是_**在这样的一个目录结构下，没有任何需要相对导入的需求，在这种情况下就不要考虑使用什么相对导入了，那是自寻烦恼**_。这时候需要做的选择仅仅只是`from package import item` 还是`import item.subitem.subsubitem`。  
+所以，虽然错误不同，但结论就是**在这样的一个目录结构下，没有任何需要相对导入的需求，在这种情况下就不要考虑使用什么相对导入了，那是自寻烦恼**。这时候需要做的选择仅仅只是`from package import item` 还是`import item.subitem.subsubitem`。  
 当然如果仅仅如此的话，就不会有那么多与import相关的问题了，所以，我们修改一下当前的目录结构：
 
 ```
@@ -1561,4 +1561,15 @@ if __name__=='__main__':
     func11()
 ```
 运行结果是一致的，有没有`package1/__init__.py`都是。  
-这是在`main.py`中导入的结果，在`topmodule1.py`中进行导入结果也是一样的，当然这里说的是**绝对导入**。
+这是在`main.py`中导入的结果，在`topmodule1.py`中进行导入结果也是一样的，当然这里说的是**绝对导入**。  
+接下来，我们考虑在p1m1中导入p1m2,并且运行main.py：
+
+导入语句|运行结果
+-------|-------
+`from p1m2 import func12`|`ModuleNotFoundError: No module named 'p1m2'`
+`import p1m2`|`ModuleNotFoundError: No module named 'p1m2'`
+`from . import p1m2`|ok
+`from .p1m2 import func12`|ok
+
+然而必须要注意的是，如果我们在package1目录中直接运行p1m1.py，那么上面表中的前两行的导入语句会有正确的结果，后两行会给出错误提示，这也是符合之前的讨论的。  
+这里并没有列出所有的情况，可以自己尝试下。然而，我们可以有个**结论，在主模块中导入其某个package中的module，而这个module又导入同一package中的其他module时，必须在该module中使用相对导入，也就是像上面表格那样加上`.`。不仅如此，如果在这个module中又要导入这个package的子package，要在该子package名字前加上`.`**。可以自行验证，虽然这种package中又有子package的架构并不值得推荐。
