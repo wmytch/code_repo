@@ -1,7 +1,7 @@
 # Python笔记  
 
   
-###  2.1.1. Argument Passing 
+### 2.1.1. Argument Passing 
 `python3 -c 'import sys;print(sys.argv[0]);print(sys.argv[1]),print(sys.argv[2])' 1 2`
 输出为:   
 
@@ -1502,4 +1502,266 @@ package.topmodule2
 func2
 ```
 另外，使用`....`的导入方式是不存在的，可自行验证，这也是跟c/c++不同的地方，或者说`..`和`.`并不能完全视为路径。
+### 7.2. Reading and Writing Files with和for
 
+```python
+>>> with open('workfile') as f:
+...     read_data = f.read()
+>>> f=open('workfile')
+>>> for line in f:
+...     print(line, end='')
+```
+### 9. Classes
+
+- 普通成员(函数，数据)都是public的
+- 函数都是virtual的
+- 成员函数定义时，其第一个参数是显式提供的一个对象指针，而调用时这个参数是隐含的，也就是不需要显式提供这个指针对象的。
+- 类本身就是对象，因此可以改名以及导入
+- 内置类型可以作为基类
+- 可以重载大多数内置运算符  
+
+### 9.1. A Word About Names and Objects
+一个对象可以有多个名字，这些名字可以理解为别名或者引用。
+
+### 9.2. Python Scopes and Namespaces namespace
+namespace是从名字到对象的映射。看看c++的namespace的定义或者申明方式:
+
+```c++
+namespace xxx{/*各种东西*/  } //一个名字空间：xxx
+```
+可以通过python的namespace的创建时机和生存期来体会其中的区别：
+
+- python翻译器启动时就创建了一个内置名字的名字空间，并且其中的名字不会被移除。
+- 当读入一个module时，这个module的全局名字空间就创建了，并且持续存在到翻译器退出。
+- 翻译器直接调用的语句，不论是从脚本读入还是从交互界面输入，都被认为有个独立的名字空间。
+- 函数被调用是创建了属于这个函数的local namespace，函数退出时被移除，包括异常时。递归调用的函数总是各自有各自的local namespace。
+
+**总之，python的namespace自然而成。**
+### 9.2. Python Scopes and Namespaces scope
+scope是python程序中的一块文本，在该区域内一个名字空间可以直接访问，也就是不用加限定就可以访问。这是一个静态的描述。  
+在执行的时候，一个名字空间可以直接访问的至少有三个scope，这三个scope是嵌套的，查找名字的时候从里到外，体会下这里名字空间与c/c++名字空间概念上的差异：  
+
+- 最内层，包括局部名字
+- 函数的非局部但也非全局的名字，以及module的全局的名字
+- 最外层，系统内置的名字。
+
+熟悉的变量隐藏这里也是适用的，虽然说法不一样。
+
+9.2.1. Scopes and Namespaces Example
+
+```python
+def scope_test():
+    def do_local():
+        spam = "local spam"
+
+    def do_nonlocal():
+        nonlocal spam
+        spam = "nonlocal spam"
+
+    def do_global():
+        global spam
+        spam = "global spam"
+
+    spam = "test spam"
+    do_local()
+    print("After local assignment:", spam)
+    do_nonlocal()
+    print("After nonlocal assignment:", spam)
+    do_global()
+    print("After global assignment:", spam)
+
+scope_test()
+print("In global scope:", spam)
+```
+运行结果：
+
+```
+After local assignment: test spam  #do_local里的赋值没有改变scope_test中spam的对象绑定
+After nonlocal assignment: nonlocal spam #使用nonlocal将do_nonlocal中的spam绑定至外面的spam，也就是scope_test中的那个spam，要注意nonlocal的名字必须是显式存在的非local的名字，之前之后没有关系。
+After global assignment: nonlocal spam #使用global表示这里的赋值操作指向global中的spam，而不是在scope_test中的这个spam，即便在global中还没有spam存在。
+In global scope: global spam #之前并不存在的spam，也就是说在一个函数中定义了一个global的名字，并且在global中可以直接访问。
+```
+体会下nonlocal和global的使用。  
+**总之，global必然是global的，而nonlocal则是非local的，也就是在当前的外面一层,但不能是global的。**
+
+### 9.3.5. Class and Instance Variables
+
+```python
+class Dog:
+
+    kind = 'canine'         # class variable shared by all instances
+
+    def __init__(self, name):
+        self.name = name    # instance variable unique to each instance
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.kind                  # shared by all dogs
+'canine'
+>>> e.kind                  # shared by all dogs
+'canine'
+>>> d.name                  # unique to d
+'Fido'
+>>> e.name                  # unique to e
+'Buddy'
+```
+```python
+class Dog:
+
+    tricks = []             # mistaken use of a class variable
+
+    def __init__(self, name):
+        self.name = name
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks                # unexpectedly shared by all dogs
+['roll over', 'play dead']
+```
+```python
+class Dog:
+
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []    # creates a new empty list for each dog
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks
+['roll over']
+>>> e.tricks
+['play dead']
+```
+### 9.7. Odds and Ends `struct`
+如果需要一个类似于c的struct的数据结构，可以：
+
+```python
+class Employee:
+    pass
+
+john = Employee()  # Create an empty employee record
+
+# Fill the fields of the record
+john.name = 'John Doe'
+john.dept = 'computer lab'
+john.salary = 1000
+```
+
+### 9.7. Odds and Ends 多态
+因为python中所有数据类型都是对象，所以实现多态是很自然的，或者说，通过鸭子类型来实现了多态。如果某个函数，可以传进去一个类，这个类本身是一个对象，其中定义了对某种数据类型的操作，在这个函数中我们就可以通过这个类的引用操作具体的某种数据类型。
+### 9.8. Iterators `for` `iter` `next`
+
+```python
+for element in [1, 2, 3]:
+    print(element)
+for element in (1, 2, 3):
+    print(element)
+for key in {'one':1, 'two':2}:
+    print(key)
+for char in "123":
+    print(char)
+for line in open("myfile.txt"):
+    print(line, end='')
+```
+`for`语句实际上调用了`iter()`函数，这个函数返回一个容器对象的迭代器对象，这个迭代器对象定义了一个方法：`__next()__`，于是就可以通过这个方法来访问容器对象的元素：
+
+```python
+>>> s = 'abc'
+>>> it = iter(s)
+>>> it
+<iterator object at 0x00A1DB50>
+>>> next(it)
+'a'
+>>> next(it)
+'b'
+>>> next(it)
+'c'
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    next(it)
+StopIteration
+```
+类似的我们可以对自定义对象定义迭代器：
+
+```python
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+```
+运行一下：
+
+```python
+>>> rev = Reverse('spam')
+>>> for char in rev:
+...     print(char)
+...
+m
+a
+p
+s
+```
+### 9.8. Iterators `__func__()`与`func()`
+在上面我们已经看到了`__next__()`与`next()`以及`__iter__()`与`iter()`之间各自的关系，具体的说就是，如果一个对象obj定义了`__func__(self)`这样的方法，那么就可以用`func(obj)`来调用这个obj的`__func__(self)`方法。这也是所谓**鸭子类型**的一个实例，同时也是前面提到的多态的一个例子，当然多态并不仅仅如此。
+### 9.9. Generators
+Generator是用来生成迭代器的：
+
+```python
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+>>> for char in reverse('golf'):
+...     print(char)
+...
+f
+l
+o
+g
+```
+当然也可以像前面那样定义对象自己的迭代器。generator自动生成`__iter__()`和`__next__()`,而更主要的是能够自动保存局部变量和运行状态，比方说上面的index和data。
+所以，如果我们需要创建一个迭代器，并不需要去修改原来的对象，只需要写这么一个函数就行了。
+当然，如果对象本身就已经定义了`__iter__()`和`__next__()`，也就不需要generator了。
+### 9.10. Generator Expressions
+Generator Expression类似于list或者dict的comprehension
+
+```python
+>>> sum(i*i for i in range(10))                 # sum of squares
+285
+
+>>> xvec = [10, 20, 30]
+>>> yvec = [7, 5, 3]
+>>> sum(x*y for x,y in zip(xvec, yvec))         # dot product
+260
+
+>>> from math import pi, sin
+>>> sine_table = {x: sin(x*pi/180) for x in range(0, 91)}
+
+>>> unique_words = set(word  for line in page  for word in line.split())
+
+>>> valedictorian = max((student.gpa, student.name) for student in graduates)
+
+>>> data = 'golf'
+>>> list(data[i] for i in range(len(data)-1, -1, -1))
+['f', 'l', 'o', 'g']
+```
