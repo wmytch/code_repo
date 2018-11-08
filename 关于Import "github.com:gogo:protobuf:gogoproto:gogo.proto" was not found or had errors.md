@@ -1,4 +1,4 @@
-# 关于`github.com/gogo/protobuf/gogoproto/gogo.proto: Import "google/protobuf/descriptor.proto" was not found or had errors.`  
+# 关于`Import "github.com/gogo/protobuf/gogoproto/gogo.proto" was not found or had errors`  
 实际上这个错误并不是找不到`gogo.proto`,而是找不到其中`import`的`google/protobuf/descriptor.proto`.  
 所以需要指定这个文件所在的目录，比方说`$GOPATH/src/google/protobuf/`。  
 执行命令：`protoc -I$GOPATH/src/ --go_out=. abci-test/types/types.proto`  
