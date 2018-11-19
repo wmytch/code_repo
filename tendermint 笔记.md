@@ -13,13 +13,11 @@
 
 - 一些被赋予权重的validator或者说验证者成为一个集合，块就由这个集合里的成员提交
 
-- Membership and weighting within this validator set may change over time.
-
-  这个验证者集合的成员和权重是随时间而变的
+- 这个验证者集合的成员和权重是随时间而变的
 
 - 只要这些验证者中不超过1/3的成员是恶意的或者有缺陷的，这个区块链就是安全并且活跃的。
 
-- 一次commit指一个带签名的消息的集合，这些消息来自当前验证者集的成员，这些成员的权重之和超过总权重的2/3
+- 一个commit指一个带签名的消息的集合，这些消息来自当前验证者集的成员，这些成员的权重之和超过总权重的2/3
 
 - 验证者各自对块进行提议和表决，收到足够的票数之后，这一块就被认为提交了
 
@@ -37,6 +35,6 @@
 
 - 而事务结果和验证者集合并不直接包含在块中，只是一个加密的摘要(merkel树的根)
 
-- Hence, verification of a block requires a separate data structure to store this information因此，验证一个块需要一个单独的数据结构来存储这些信息，这些信息称为state
+- 因此，验证一个块需要一个单独的数据结构来存储这些信息，这些信息称为state
 
--  Block verification also requires access to the previous block.块验证需要访问前一个块
+- 块验证需要访问前一个块
