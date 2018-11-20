@@ -314,3 +314,62 @@ block.Header.LastBlockID == BlockID {
 另外，`state.LastConsensusParams`可能会被应用改变。
 
 **还有别的内容，并不费解，所以直接看原文档即可**
+
+### State
+
+```go
+type State struct {
+    Version     Version
+    LastResults []Result
+    AppHash []byte
+
+    LastValidators []Validator
+    Validators []Validator
+    NextValidators []Validator
+
+    ConsensusParams ConsensusParams
+}
+```
+
+#### Result
+
+```go
+type Result struct {
+    Code uint32
+    Data []byte
+}
+```
+
+#### Validator
+
+```go
+type Validator struct {
+    Address     []byte
+    PubKey      PubKey
+    VotingPower int64
+}
+```
+
+#### ConsensusParams
+
+```go
+type ConsensusParams struct {
+	BlockSize
+	Evidence
+	Validator
+}
+
+type BlockSize struct {
+	MaxBytes        int64
+	MaxGas          int64
+}
+
+type Evidence struct {
+	MaxAge int64
+}
+
+type Validator struct {
+	PubKeyTypes []string
+}
+```
+
