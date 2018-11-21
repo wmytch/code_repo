@@ -7,13 +7,13 @@
 
 - hash-linked batches of transactions 一批事务组成一个链表，这个链表的每一个元素也就是每一个事务中有一个字段用来存放前一个元素的hash值，这样这一批事务就由这样一个链表表示
 
-- blocks 块 上条所说的事务批也就被称为块
+- blocks 区块 上条所说的事务批也就被称为区块
 
-- blockchain 区块链就由这些块组成
+- blockchain 区块链就由这些区块组成
 
-- Height 块的唯一索引，这个值是唯一并且严格单调的
+- Height 区块的唯一索引，这个值是唯一并且严格单调的
 
-- 一些被赋予权重的validator或者说验证者成为一个集合，块就由这个集合里的成员提交
+- 一些被赋予权重的validator或者说验证者成为一个集合，区块就由这个集合里的成员提交
 
 - 这个验证者集合的成员和权重是随时间而变的
 
@@ -21,25 +21,25 @@
 
 - 一个commit指一个带签名的消息的集合，这些消息来自当前验证者集的成员，这些成员的权重之和超过总权重的2/3
 
-- 验证者各自对块进行提议和表决，这里的表决，就是投赞成票，收到足够的赞成票或者说表决数之后，这一块就被认为提交了
+- 验证者各自对区块进行提议和表决，这里的表决，就是投赞成票，收到足够的赞成票或者说表决数之后，这一区块就被认为提交了
 
-- 这些表决信息会包含在下一块中，毕竟当前正在处理的块已经创建，而区块链当中块已经创建便不能更改，没有包含在表决信息当中的验证者就被忽略掉了，不论是没有投票赞成还是没有参加表决
+- 这些表决信息会包含在下一区块中，毕竟当前正在处理的区块已经创建，而区块链当中区块已经创建便不能更改，没有包含在表决信息当中的验证者就被忽略掉了，不论是没有投票赞成还是没有参加表决
 
-- 块一旦提交，就可以由一个应用来进行一些处理，比方说返回块中事务的一些结果
+- 区块一旦提交，就可以由一个应用来进行一些处理，比方说返回区块中事务的一些结果
 
-- 这些应用也可以返回一些块之外的信息，比如验证者集合的变化，以及最近状态的加密摘要
+- 这些应用也可以返回一些区块之外的信息，比如验证者集合的变化，以及最近状态的加密摘要
 
 - Tendermint 用来对区块链的最近状态进行验证和认证
 
-- 因此，在块的header部分包含了一些加密的信息作为承诺
+- 因此，在区块的header部分包含了一些加密的信息作为承诺
 
-- 这些信息包括块的目录(所包含的事务)，提交这一块的验证者，以及由应用返回的其他一些结果。需要注意的是应用返回的结果只能包含在下一个块中，因为应用只有在块提交之后才会对块进行处理，而块一经创建便不可更改
+- 这些信息包括区块的目录(所包含的事务)，提交这一区块的验证者，以及由应用返回的其他一些结果。需要注意的是应用返回的结果只能包含在下一个区块中，因为应用只有在区块提交之后才会对区块进行处理，而区块一经创建便不可更改
 
-- 而事务结果和验证者集合并不直接包含在块中，只是一个加密的摘要(merkel树的根)
+- 而事务结果和验证者集合并不直接包含在区块中，只是一个加密的摘要(merkel树的根)
 
-- 因此，验证一个块需要一个单独的数据结构来存储这些信息，这些信息称为state
+- 因此，验证一个区块需要一个单独的数据结构来存储这些信息，这些信息称为state
 
-- 块验证需要访问前一个块
+- 区块验证需要访问前一个区块
 
 ### Blockchain--数据结构
 
@@ -57,11 +57,11 @@ type Block struct {
 - Header 就是Header
 - Txs 代表事务，是个Data类型
 - Evidence 是一个list，指的是一些不合法的行为，比方说签名不符合的表决
-- LastCommit 顾名思义，上一块的Commit，也就是上一块的表决数据，如前所述
+- LastCommit 顾名思义，上一区块的Commit，也就是上一区块的表决数据，如前所述
 
 ##### Header
 
-块头部是一些元数据，关于块本身、共识、承诺，还有应用返回的结果
+区块头部是一些元数据，关于区块本身、共识、承诺，还有应用返回的结果
 
 ```go
 type Header struct {
@@ -106,7 +106,7 @@ type Version struct {
 
 ###### BlockID
 
- `BlockID` 包含块的两个不同的Merkle树根。第一个，作为块的主hash，是头部所有域的Merkle树根。第二个，在共识期间用来保护块的安全传播，是完全序列化的块切分之后的一个Merkle树根。
+ `BlockID` 包含区块的两个不同的Merkle树根。第一个，作为区块的主hash，是头部所有域的Merkle树根。第二个，在共识期间用来保护区块的安全传播，是完全序列化的区块切分之后的一个Merkle树根。
 
 ```go
 type BlockID struct {
@@ -143,11 +143,11 @@ type Commit struct {
 }
 ```
 
-如前所述，这是前一块的commit信息
+如前所述，这是前一区块的commit信息
 
 ###### Vote
 
-一个表决是一个验证者的签名信息，验证者都是针对某一特定块而言，也就是说不同的块参与表决的验证者是不必相同的。
+一个表决是一个验证者的签名信息，验证者都是针对某一特定区块而言，也就是说不同的区块参与表决的验证者是不必相同的。
 
 ```go
 type Vote struct {
@@ -162,7 +162,7 @@ type Vote struct {
 }
 ```
 
-如前所述，一个Commit中包含了块的id，以及对这个块进行了表决的验证者列表，这里说的列表就是通常理解的列表，用slice而不是list来保存。
+如前所述，一个Commit中包含了区块的id，以及对这个区块进行了表决的验证者列表，这里说的列表就是通常理解的列表，用slice而不是list来保存。
 
 tendermint的投票包括两轮，所以`vote.Type == 1`就表示是*prevote*轮，而`vote.Type == 2`则表示*precommit*轮
 
@@ -226,7 +226,7 @@ block.Header.Timestamp >= prevBlock.Header.Timestamp + 1 ms
 block.Header.Timestamp == MedianTime(block.LastCommit, state.LastValidators)
 ```
 
-时间戳必须是单调的，并且是加权的中值，注意不是平均值。另外，一个表决的时间戳必须至少比要表决的那一块的时间戳大一毫秒。
+时间戳必须是单调的，并且是加权的中值，注意不是平均值。另外，一个表决的时间戳必须至少比要表决的那一区块的时间戳大一毫秒。
 
 另外：
 
@@ -277,7 +277,7 @@ type Header struct {
 block.Header.TotalTxs == prevBlock.Header.TotalTxs + block.Header.NumTxs
 ```
 
-所以`TotalTxs`是个累加值，表示了区块链中所有的事务的数量。对于第一个块，显然有`block.Header.TotalTxs = block.Header.NumberTxs`
+所以`TotalTxs`是个累加值，表示了区块链中所有的事务的数量。对于第一个区块，显然有`block.Header.TotalTxs = block.Header.NumberTxs`
 
 ##### LastBlockID
 
@@ -309,7 +309,7 @@ block.Header.LastBlockID == BlockID {
 }
 ```
 
-自然，第一块的 `block.Header.LastBlockID == BlockID{}`.
+自然，第一区块的 `block.Header.LastBlockID == BlockID{}`.
 
 另外，`state.LastConsensusParams`可能会被应用改变。
 
@@ -373,3 +373,40 @@ type Validator struct {
 }
 ```
 
+### Byzantine Consensus Algorithm
+
+#### Terms
+- 直接与某个节点连接的节点称为*peers*.
+- 一次共识过程会进行多个 *回合(rounds)*.
+- `NewHeight`, `Propose`, `Prevote`, `Precommit`,  `Commit` 代表一个回合当中状态机的状态，也称之为`RoundStep` 或者 "step"。通俗的说所谓状态就是某个点上的时空特性，状态会相互转化，转化又把状态联系起来，这么一种概念称为状态机.
+- 一个节点必然位于一个给定的`(height，round，step)`或者说  `(H,R,S)`, 也可以省略掉***步***简化成 `(H,R)` 
+- *prevote* 或者 *precommit* 表示广播一个prevote Vote数据或者一个首次precommit Vote数据
+- 验证者收到广播的vote数据之后，就会进行表决，也就是签名。在`(H,R)`上的一个表决或者说vote，就是在相应的Vote数据块的Signature字段填上内容 。要注意的是一个vote对应一个验证者，共识过程会收集这些vote
+- *+2/3*  “超过 2/3"
+- *1/3+*  "1/3 或者更多"
+- A set of +2/3 of prevotes for a particular block or `<nil>` at `(H,R)` is called a *proof-of-lock-change* or *PoLC* for short. 这一条不知道啥意思，先保留。大概指的是处于`(H,R)`状态的或者是一个特定的区块，或者什么都没有(`<nil>`)，有一个集合，里边收集了超过2/3的预表决，这个集合就称为**proof-of-lock-change**或者**PoLC**,也就是**锁定变更证明**？理解一下，因为区块不可更改，所以超过2/3的表决记录就可以证明这一区块没有被更改？
+
+#### State Machine Overview
+
+```go
+NewHeight -> (Propose -> Prevote -> Precommit)+ -> Commit -> NewHeight ->...
+```
+
+`(Propose -> Prevote -> Precommit)`就是一个回合(round)，`+`表示可以有多个回合。会有多个回合的原因大概有：
+
+- 指定的提交参与者不在线
+- 指定的提交者提交的区块非法
+- 指定提交者提交的区块没有及时发布
+- 在 `Precommit`前没有及时收到足够的预表决票数。或者即使收集到了2/3的预表决，但是其中有至少一个验证者的签名是`<nil>`或者干了些见不得人的事情，也就是说至少有一个验证者的vote数据是非法的。
+- 参与预提交的验证者投票权重达不到2/3。
+
+#### Background Gossip
+- 节点传播`PartSet` ，也就是把当前回合提议的区块分成多个子块来传播
+- 节点传播prevote/precommit表决。一个节点 `NODE_A` 位于`NODE_B`之前，它向 `NODE_B` 发送当前回合的prevotes或者precommits ，然后`NODE_B`'可以进一步转发 
+- 如果有PoLC (proof-of-lock-change)提议，则节点传播对这个提议的prevote
+- Nodes gossip to nodes lagging in blockchain height with block commits for older blocks.这个不确定啥意思，大概是在区块链上如果发现height并不是当前height的区块，节点也会传播
+- 节点有时候会传播 `HasVote` 消息以告知peers自己已经拥有的vote
+- 节点向所有的邻居广播自己的当前状态，但不会进一步传播
+#### Proposals
+
+每个回合的提议都由指定提议者签名并公布。提议者由一个确定且没有歧义的轮转算法根据其投票权占比挑选出来。 在 `(H,R)` 上的一个提议由一个区块和一个可选部分组成，这个可选部分是最近的PoLC回合，有`PoLC-Round < R`，如果这个建议者知道这个回合存在的话。这意味着网络允许节点在安全的时候解锁以确保liveness property(这里指表决最终一定会返回一个正确的结果)。
