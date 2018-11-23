@@ -410,3 +410,77 @@ NewHeight -> (Propose -> Prevote -> Precommit)+ -> Commit -> NewHeight ->...
 #### Proposals
 
 每个回合的提议都由指定提议者签名并公布。提议者由一个确定且没有歧义的轮转算法根据其投票权占比挑选出来。 在 `(H,R)` 上的一个提议由一个区块和一个可选部分组成，这个可选部分是最近的PoLC回合，有`PoLC-Round < R`，如果这个建议者知道这个回合存在的话。这意味着网络允许节点在安全的时候解锁以确保liveness property(这里指表决最终一定会返回一个正确的结果)。
+
+#### State Machine Spec
+
+##### Common exit conditions
+
+- 收到+2/3 预提交 -->  `Commit(H)`
+- 在 `(H,R+x)`收到+2/3的预表决. --> `Prevote(H,R+x)`
+- 在任意 `(H,R+x)`收到+2/3的预提交. -->  `Precommit(H,R+x)`
+
+##### Propose Step (height:H,round:R)
+
+- 进入：提议者提交一个`(H,R)`的区块
+
+- 结束：
+  - `timeoutProposeR`  -->  `Prevote(H,R)` 
+
+  - 收到一个区块提议后并且所有的预表决都在 `PoLC-Round` -->  `Prevote(H,R)` 
+
+  - 上面的Common exit conditions
+
+##### Prevote Step (height:H,round:R)
+
+进入 `Prevote`的每一个验证者都广播其预表决的表决。
+
+- 如果在 `LastLockRound`之后验证者被锁定在一个区块，但是现在有一个在`PoLC-Round` 回合的PoLC，且`LastLockRound < PoLC-Round < R`, 则解锁
+- 如果验证者仍被锁定在一个区块上，则将这个区块预表决(锁定了这个验证者的那一块)
+- 如果没有被锁，并且来自 `Propose(H,R)`的区块是好的，则预表决这一区块
+- 否则，如果这个提议是无效或者没有按时收到，则预提交`<nil>`
+
+`Prevote` 结束于:
+
+ - 收到超过+2/3的验证者的预表决，不论这个预表决是对某一区块还是仅仅跳了了某一块或者只是提交了`<nil>` --> `Precommit(H,R)`
+ - 在 `timeoutPrevote`后收到任意的+2/3预表决 --> `Precommit(H,R)` 
+ -  上面的 common exit conditions
+
+##### Precommit Step (height:H,round:R)
+
+进入`Precommit`后，每个验证者广播其预提交表决
+
+- 如果在 `(H,R)`，对某一个区块`B`，验证者有一个PoLC,则将it (re)locks (or changes lock to) and precommits则将 `B`(重新) 锁定或者将锁转向`B`,并对其预提交，然后设置 `LastLockRound = R`. 
+- 否则，如果验证者对在 `(H,R)` 对 `<nil>`有一个PoLC，则将其解锁并预提交`<nil>`.
+- 否则，保持锁不变并预提交 `<nil>`，对 `<nil>`的预提交表示”这个回合我没有看到PoLC，但是我确实收到了+2/3的预表决并且可以等一会“ 
+
+预表决结束于:
+
+- 对 `<nil>`收到+2/3的预提交 --> `Propose(H,R+1)` 
+- 在 `timeoutPrecommit`收到任意的+2/3的预提交 --> `Propose(H,R+1)` 
+- 上面的 common exit conditions
+
+##### Commit Step (height:H)
+
+- Set `CommitTime = now()`
+- Wait until block is received. --> goto `NewHeight(H+1)`
+
+##### NewHeight Step (height:H)
+
+- Move `Precommits` to `LastCommit` and increment height.
+- Set `StartTime = CommitTime+timeoutCommit`
+- Wait until `StartTime` to receive straggler commits. --> goto `Propose(H,0)`
+
+#### Proofs
+
+##### Proof of Safety
+
+Assume that at most -1/3 of the voting power of validators is byzantine.
+If a validator commits block `B` at round `R`, it's because it saw +2/3
+of precommits at round `R`. This implies that 1/3+ of honest nodes are
+still locked at round `R' > R`. These locked validators will remain
+locked until they see a PoLC at `R' > R`, but this won't happen because
+1/3+ are locked and honest, so at most -2/3 are available to vote for
+anything other than `B`
+
+这的意思大概是，假定在所有的验证者中拜占庭节点不超过1/3，那么在对回合R表决时，如果一个验证者做了提交，那说明它看到了有+2/3的验证者做了预提交，也就是说有2/3以上的表决权重通过了这个回合的表决并且是可信的。从另一方面看，这些已经在回合`R`做了预提交的验证者，自然已经开始了新一个回合`R'`的表决，因为拜占庭节点不超过1/3,那么在这个回合进行表决的诚实节点自然就超过了1/3。这些处于回合`R'`或者说锁定在`R'`的节点只有在他们看到了一个在回合`R'`的PoLC才会结束这个回合的表决，也就是解锁，然而这不可能，也就是不可能出现一个在回合`R'`的PoLC，因为这时候还有+1/3的诚实节点锁定在回合`R`,
+
